@@ -10,6 +10,7 @@
   "author": "Bunyamin&Omer",
   "license": "ISC",
   "dependencies": {
+    "ejs": "^3.1.10",
     "express": "^4.21.0"
   },
   "devDependencies": {
