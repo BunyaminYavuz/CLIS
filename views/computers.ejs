@@ -1,0 +1,52 @@
+<%- include('partials/_header') %>
+
+   <!-- body -->
+   <body class="main-layout inner_posituong">
+      <!-- loader  -->
+      <div class="loader_bg">
+         <div class="loader"><img src="images/loading.gif" alt="#" /></div>
+      </div>
+      <!-- end loader -->
+      <!-- header -->
+      <%- include('partials/_navbar') %>
+
+      <!-- end header inner -->
+      <!-- end header -->
+      <!-- products -->
+      <div  class="products">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="titlepage">
+                     <h2>Our Products</h2>
+                  </div>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="our_products">
+                     <div class="row">
+                        <% for( computer of computers ) { %>
+                        <div class="col-md-4 margin_bottom1">
+                           <div class="product_box">
+                              <figure><img src="images/pc.png" alt="#"/></figure>
+                              <h3><%= computer.name %></h3>
+                              <h4><%= computer.description %></h4>
+                           </div>
+                        </div>
+                        <% } %>
+                        
+                        <div class="col-md-12">
+                           <a class="read_more" href="#">See More</a>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- end products -->
+      <!--  footer -->
+      <%- include('partials/_footer') %>
+
+

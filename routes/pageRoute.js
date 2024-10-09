@@ -5,5 +5,7 @@ const router = express.Router();
 
 router.route("/").get(pageContorller.getIndexPage)
 router.route("/about").get(pageContorller.getAboutPage)
+router.route("/contact").get(pageContorller.getContactPage)
+router.route("/laptop").get(pageContorller.getLaptopPage)
 
 export default router;

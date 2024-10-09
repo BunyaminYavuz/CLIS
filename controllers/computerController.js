@@ -19,10 +19,10 @@ const createComputer = async (req, res) => {
 const getAllComputers = async (req, res) => {
     try {
       const computers = await Computer.find({});
-      res.status(200).json({
-        succeded: true,
+      res.status(200).render("computers", {
         computers,
-      });
+        link : 'computers'
+    })
     } catch (error) {
       res.status(500).json({
           succeded : false,

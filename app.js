@@ -13,7 +13,7 @@ const app = express();
 const port = process.env.PORT;
 
 // ejs template engine
-app.set("view engine", "ejs")
+app.set('view engine', 'ejs');
 
 // static files middleware
 app.use(express.static("public"))
