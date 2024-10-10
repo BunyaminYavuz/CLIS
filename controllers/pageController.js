@@ -16,10 +16,6 @@ const getContactPage = (req, res) =>{
     });
 }
 
-const getLaptopPage = (req, res) =>{
-    res.render("laptop",{
-        link:'laptop'
-    });
-}
 
-export { getIndexPage, getAboutPage, getContactPage, getLaptopPage };
+
+export { getIndexPage, getAboutPage, getContactPage };

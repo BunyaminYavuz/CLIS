@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import conn from "./db.js"
 import pageRoute from "./routes/pageRoute.js"
 import computerRoute from "./routes/computerRoute.js"
+import categoryRoute from "./routes/categoryRoute.js"
 
 dotenv.config()
 
@@ -23,6 +24,7 @@ app.use(express.json())
 // routes
 app.use("/", pageRoute)
 app.use("/computers", computerRoute)
+app.use("/categories",categoryRoute)
 
 app.listen(port, ()=>{
     console.log(`Application is running on ${port}`);

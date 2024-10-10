@@ -11,10 +11,9 @@
       <%- include('partials/_navbar') %>
 
       <!-- end header inner -->
-      <!-- end header -->
       <!-- products -->
-      <div  class="products">
-         <div class="container">
+      <div class="products">
+         <div class="container-fluid">
             <div class="row">
                <div class="col-md-12">
                   <div class="titlepage">
@@ -22,14 +21,40 @@
                   </div>
                </div>
             </div>
+            
+            <!-- Sidebar ve Products aynı satırda -->
             <div class="row">
-               <div class="col-md-12">
+               
+               <!-- Sidebar (Left) -->
+               <div class="col-lg-2 col-md-4">
+                  <div class="widget-search">
+                     <div class="site-search-area">
+                        <form method="get" id="site-searchform" action="#">
+                           <div>
+                              <input class="input-text form-control" name="search-k" id="search-k" placeholder="Search keywords..." type="text">
+                              <input id="searchsubmit" value="Search" type="submit">
+                           </div>
+                        </form>
+                     </div>
+                  </div>
+                  <div class="widget-categories">
+                     <h3 class="widget-title">Categories</h3>
+                     <ul>
+                        <%  for (let i = 0; i< categories.length;i++)  { %>  
+                           <li><a href="/computers?categories=<%= categories[i]._id %>"><%= categories[i].name %></a></li>
+                           <% } %>                      
+                     </ul>
+                  </div>
+               </div>
+               
+               <!-- Products (Right) -->
+               <div class="col-lg-10 col-md-8">
                   <div class="our_products">
                      <div class="row">
-                        <% for( computer of computers ) { %>
-                        <div class="col-md-4 margin_bottom1">
+                        <% for (computer of computers) { %>
+                        <div class="col-md-2 margin_bottom1">
                            <div class="product_box">
-                              <figure><img src="images/pc.png" alt="#"/></figure>
+                              <figure><a href="/computers/<%= computer._id %>"><img src="images/pc.png" alt="#"/></a></figure>
                               <h3><%= computer.name %></h3>
                               <h4><%= computer.description %></h4>
                            </div>
@@ -42,11 +67,10 @@
                      </div>
                   </div>
                </div>
+
             </div>
          </div>
       </div>
       <!-- end products -->
-      <!--  footer -->
+      <!-- footer -->
       <%- include('partials/_footer') %>
-
-
