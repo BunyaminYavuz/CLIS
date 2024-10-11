@@ -17,7 +17,7 @@
             <div class="row">
                <div class="col-md-12">
                   <div class="titlepage">
-                     <h2>Our Products</h2>
+                     <h2>COMPUTER LABORATORIES</h2>
                   </div>
                </div>
             </div>
@@ -27,46 +27,58 @@
                
                <!-- Sidebar (Left) -->
                <div class="col-lg-2 col-md-4">
-                  <div class="widget-search">
-                     <div class="site-search-area">
-                        <form method="get" id="site-searchform" action="#">
-                           <div>
-                              <input class="input-text form-control" name="search-k" id="search-k" placeholder="Search keywords..." type="text">
-                              <input id="searchsubmit" value="Search" type="submit">
-                           </div>
-                        </form>
-                     </div>
+                  <div class="widget-search" style="background-color: #e6e6fa; padding: 15px; border-radius: 10px; color: #4b0082; margin-bottom: 20px;">
+                      <div class="site-search-area">
+                          <form method="get" id="site-searchform" action="#">
+                              <div>
+                                  <input class="input-text form-control" name="search-k" id="search-k" placeholder="Search keywords..." type="text" style="border-radius: 5px; border: 1px solid #5e2a99; padding: 10px;">
+                                  <input id="searchsubmit" value="Search" type="submit" style="border-radius: 5px; background-color: #4b0082; color: white; border: none; padding: 10px 15px; cursor: pointer;">
+                              </div>
+                          </form>
+                      </div>
                   </div>
-                  <div class="widget-categories">
-                     <h3 class="widget-title">Categories</h3>
-                     <ul>
-                        <%  for (let i = 0; i< categories.length;i++)  { %>  
-                           <li><a href="/computers?categories=<%= categories[i]._id %>"><%= categories[i].name %></a></li>
-                           <% } %>                      
-                     </ul>
+                  <div class="widget-categories" style="background-color: #e6e6fa; padding: 15px; border-radius: 10px; color: #4b0082;">
+                      <h3 class="widget-title">Categories</h3>
+                      <ul>
+                          <% for (let i = 0; i < categories.length; i++) { %>
+                          <li>
+                              <a href="/computers?categories=<%= categories[i]._id %>" style="color: #4b0082; text-decoration: none;">
+                                  <%= categories[i].name %>
+                              </a>
+                          </li>
+                          <% } %>
+                      </ul>
                   </div>
-               </div>
+              </div>
+              
+              
                
                <!-- Products (Right) -->
                <div class="col-lg-10 col-md-8">
                   <div class="our_products">
-                     <div class="row">
-                        <% for (computer of computers) { %>
-                        <div class="col-md-2 margin_bottom1">
-                           <div class="product_box">
-                              <figure><a href="/computers/<%= computer._id %>"><img src="images/pc.png" alt="#"/></a></figure>
-                              <h3><%= computer.name %></h3>
-                              <h4><%= computer.description %></h4>
-                           </div>
-                        </div>
-                        <% } %>
-                        
-                        <div class="col-md-12">
-                           <a class="read_more" href="#">See More</a>
-                        </div>
-                     </div>
+                      <div class="row">
+                          <% for (computer of computers) { %>
+                          <div class="col-md-2 margin_bottom1">
+                              <div class="product_box" style="background-color: #e6e6fa; border-radius: 15px; position: relative; padding: 20px; border: 3px solid <%= computer.isUsed ? 'red' : 'green' %>; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
+                                  <figure>
+                                      <a href="/computers/<%= computer._id %>">
+                                          <img src="images/pc.png" alt="#" />
+                                      </a>
+                                  </figure>
+                                  <h3><%= computer.name %></h3>
+                                  <h4><%= computer.description %></h4>
+                              </div>
+                          </div>
+                          <% } %>
+                          
+                          <div class="col-md-12">
+                              <a class="read_more" href="#">See More</a>
+                          </div>
+                      </div>
                   </div>
-               </div>
+              </div>
+              
+              
 
             </div>
          </div>

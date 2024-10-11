@@ -20,6 +20,11 @@ const computerModel = new Schema({
     category : {
         type : mongoose.Schema.Types.ObjectId,
         ref : "Category"
+    },
+    isUsed : {
+        type:Boolean,
+        required:true,
+        default:false
     }
 })
 
