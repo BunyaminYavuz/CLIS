@@ -1,6 +1,7 @@
 import express from "express"
 import dotenv from "dotenv"
 import conn from "./db.js"
+import cookieParser from "cookie-parser"
 import pageRoute from "./routes/pageRoute.js"
 import computerRoute from "./routes/computerRoute.js"
 import categoryRoute from "./routes/categoryRoute.js"
@@ -21,6 +22,7 @@ app.set('view engine', 'ejs');
 app.use(express.static("public"))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(cookieParser());
 
 
 // routes
