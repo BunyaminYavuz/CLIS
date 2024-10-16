@@ -22,6 +22,12 @@ const getRegisterPage = (req, res) =>{
     });
 }
 
+const getLoginPage = (req, res) =>{
+    res.render("login",{
+        link:'login'
+    });
+}
 
 
-export { getIndexPage, getAboutPage, getContactPage, getRegisterPage };
+
+export { getIndexPage, getAboutPage, getContactPage, getRegisterPage, getLoginPage };

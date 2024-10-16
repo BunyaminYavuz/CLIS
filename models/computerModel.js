@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose
 
-const computerModel = new Schema({
+const computerSchema = new Schema({
     name : {
         type : String,
         required : true
@@ -29,6 +29,6 @@ const computerModel = new Schema({
 })
 
 
-const Computer = mongoose.model("Computer", computerModel)
+const Computer = mongoose.model("Computer", computerSchema)
 
 export default Computer;
