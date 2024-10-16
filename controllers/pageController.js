@@ -16,6 +16,12 @@ const getContactPage = (req, res) =>{
     });
 }
 
+const getRegisterPage = (req, res) =>{
+    res.render("register",{
+        link:'register'
+    });
+}
 
 
-export { getIndexPage, getAboutPage, getContactPage };
+
+export { getIndexPage, getAboutPage, getContactPage, getRegisterPage };
