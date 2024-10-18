@@ -1,1 +1,132 @@
-Hello Everyone
+<%- include('partials/_header') %>
+
+<!-- body -->
+<body class="main-layout inner_posituong">
+   <!-- loader  -->
+   <div class="loader_bg">
+      <div class="loader"><img src="/images/loading.gif" alt="#" /></div>
+   </div>
+   <!-- end loader -->
+   <!-- header -->
+   <%- include('partials/_navbar') %>
+
+   <!-- end header inner -->
+   <!-- Dashboard -->
+   <div class="dashboard" style="background-color: #f8f9fa; padding: 50px 0;">
+      <div class="container">
+         <div class="row">
+            <div class="col-md-12">
+               <div class="titlepage text-center" style="margin-bottom: 30px;">
+                  <h2 style="font-size: 36px; font-weight: bold; color: #4b0082;">USER DASHBOARD</h2>
+               </div>
+            </div>
+         </div>
+         
+         <!-- Dashboard Content -->
+         <div class="row">
+            <!-- Spacer Column (Left) -->
+            <div class="col-lg-3 col-md-12"></div>
+            
+            <!-- User Profile Information (Center) -->
+            <div class="col-lg-6 col-md-12 text-center">
+               <div class="profile_box" style="background-color: #ffffff; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+                  <img src="<%= user.profilePhoto %>" alt="Profile Photo" style="border-radius: 50%; width: 150px; height: 150px; border: 5px solid #4b0082;">
+                  <h3 style="margin-top: 20px; font-size: 28px; color: #333;"><%= user.fullName %></h3>
+                  <p style="color: #777; font-size: 18px;">Email: <%= user.email %></p>
+                  <p style="color: #777; font-size: 18px;">Role: <%= user.role %></p>
+                  <p style="color: #777; font-size: 18px;">Status: <%= user.accountStatus %></p>
+               </div>
+            </div>
+            
+            <!-- Spacer Column (Right) -->
+            <div class="col-lg-3 col-md-12"></div>
+         </div>
+         
+         <!-- Recent Lab Activity (Cards) -->
+         <div class="row">
+            <!-- Last Lab Entry Card -->
+            <div class="col-lg-4 col-md-6 mb-4">
+               <div class="card" style="background-color: #dbe4ff; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                  <div class="card-body">
+                     <i class="fas fa-door-open fa-3x" style="color: #4b0082;"></i>
+                     <h5 class="card-title mt-3" style="color: #2c3e50;">Last Lab Entry</h5>
+                     <p class="card-text" style="font-size: 16px; color: #333;"><%= user.lastLabEntryTime %></p>
+                  </div>
+               </div>
+            </div>
+            
+            <!-- Current Session Card -->
+            <div class="col-lg-4 col-md-6 mb-4">
+               <div class="card" style="background-color: #f3e5f5; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                  <div class="card-body">
+                     <i class="fas fa-desktop fa-3x" style="color: #6a1b9a;"></i>
+                     <h5 class="card-title mt-3" style="color: #2c3e50;">Current Session</h5>
+                     <p class="card-text" style="font-size: 16px; color: #333;"><%= user.currentLabSession || 'Not in any lab' %></p>
+                  </div>
+               </div>
+            </div>
+            
+            <!-- Usage Duration Today Card -->
+            <div class="col-lg-4 col-md-6 mb-4">
+               <div class="card" style="background-color: #e8f5e9; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                  <div class="card-body">
+                     <i class="fas fa-clock fa-3x" style="color: #1b5e20;"></i>
+                     <h5 class="card-title mt-3" style="color: #2c3e50;">Usage Duration Today</h5>
+                     <p class="card-text" style="font-size: 16px; color: #333;"><%= user.usageDurationToday %> minutes</p>
+                  </div>
+               </div>
+            </div>
+         </div>
+         
+         <!-- Lab Statistics (Cards) -->
+         <div class="row">
+            <!-- Total Hours This Month Card -->
+            <div class="col-lg-4 col-md-6 mb-4">
+               <div class="card" style="background-color: #fff3cd; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                  <div class="card-body">
+                     <i class="fas fa-calendar-alt fa-3x" style="color: #856404;"></i>
+                     <h5 class="card-title mt-3" style="color: #2c3e50;">Total Hours This Month</h5>
+                     <p class="card-text" style="font-size: 16px; color: #333;"><%= user.labStatistics.totalLabHoursThisMonth %> hours</p>
+                     <div class="progress mt-2">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: <%= user.labStatistics.totalHoursProgress %>%;" aria-valuenow="<%= user.labStatistics.totalHoursProgress %>" aria-valuemin="0" aria-valuemax="100"></div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            
+            <!-- Most Frequent Labs Card -->
+            <div class="col-lg-4 col-md-6 mb-4">
+               <div class="card" style="background-color: #e0f7fa; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                  <div class="card-body">
+                     <i class="fas fa-building fa-3x" style="color: #00796b;"></i>
+                     <h5 class="card-title mt-3" style="color: #2c3e50;">Most Frequent Labs</h5>
+                     <ul style="padding-left: 0; list-style-type: none;">
+                        <% user.labStatistics.mostFrequentLabs.forEach(function(lab) { %>
+                        <li style="color: #333; font-size: 16px;"><%= lab %></li>
+                        <% }); %>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+            
+            <!-- Recent PC Usage Card -->
+            <div class="col-lg-4 col-md-6 mb-4">
+               <div class="card" style="background-color: #fce4ec; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                  <div class="card-body">
+                     <i class="fas fa-laptop fa-3x" style="color: #c2185b;"></i>
+                     <h5 class="card-title mt-3" style="color: #2c3e50;">Recent PC Usage</h5>
+                     <ul style="padding-left: 0; list-style-type: none;">
+                        <% user.labStatistics.recentPCUsage.forEach(function(pc) { %>
+                        <li style="color: #333; font-size: 16px;"><%= pc %></li>
+                        <% }); %>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- end dashboard -->
+   <!-- footer -->
+   <%- include('partials/_footer') %>
+</body>

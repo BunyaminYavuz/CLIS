@@ -6,6 +6,7 @@ import pageRoute from "./routes/pageRoute.js"
 import computerRoute from "./routes/computerRoute.js"
 import categoryRoute from "./routes/categoryRoute.js"
 import userRoute from "./routes/userRoute.js"
+import { checkUser } from "./middlewares/authMiddlewares.js"
 
 dotenv.config()
 
@@ -26,6 +27,7 @@ app.use(cookieParser());
 
 
 // routes
+app.get("*", checkUser);
 app.use("/", pageRoute)
 app.use("/users",userRoute)
 app.use("/computers", computerRoute)

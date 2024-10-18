@@ -1,4 +1,6 @@
 import User from "../models/userModel.js";
+import Category from "../models/categoryModel.js"
+import Computer from "../models/computerModel.js"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 
@@ -64,11 +66,105 @@ const loginUser = async (req, res) => {
   };
 
 
-  const getDashboardPage = (req, res) =>{
-    res.render("dashboard",{
-        link:'dashboard'
-    });
-}
+  const getDashboardPage = async (req, res) => {
+    try {
+        let categoryId = req.query.categories || null; // Default to null if no categoryId is provided
+        let category = null;
+        let filter = {};
+
+
+        if (categoryId) {
+            category = await Category.findOne({ _id: categoryId });
+            if (category) {
+                filter = { category: category._id }; // Apply filter if the category exists
+            }
+        } else {
+            // If no categoryId, select the first category as default
+            category = await Category.findOne();
+            if (category) {
+                categoryId = category._id; // Set the first category as the active one
+                filter = { category: category._id };
+            }
+        }
+
+        const computers = await Computer.find(filter); // Fetch computers for the selected category
+        const categories = await Category.find(); // Fetch all categories
+
+        // Render the template with the data
+        res.status(200).render("dashboard", {
+            computers,
+            categories,
+            category, // Ensure category is passed to the view, even if it's null
+            categoryId,
+            link: 'dashboard',
+        });
+    } catch (error) {
+        res.status(500).json({
+            succeeded: false,
+            error,
+        });
+    }
+};
+
+
+
+
+  const getLabs = async (req, res) => {
+    try {
+        const categoryId = req.query.categories;
+  
+        let category;
+
+  
+        if (categoryId) {
+            category = await Category.findOne({ _id: categoryId });
+        } else {
+            category = await Category.findOne(); // Fetch the first category if categoryId is not provided
+        }
+  
+        // Filter based on the category found
+        let filter = {};
+        if (category) {
+            filter = { category: category._id };
+        }
+  
+        const computers = await Computer.find(filter);
+        const categories = await Category.find();
+  
+        // Render the template
+        res.status(200).render("labs", {
+            computers,
+            categories,
+            category,
+            categoryId,
+            link: 'labs',
+        });
+    } catch (error) {
+        res.status(500).json({
+            succeeded: false,
+            error,
+        });
+    }
+  };
+
+
+  const getComputer = async (req, res) => {
+    try {
+      const computer = await Computer.findById( {_id: req.params.id});
+      res.status(200).render("computer", {
+        computer,
+        link : 'labs'
+    })
+    } catch (error) {
+      res.status(400).json({
+          succeded : false,
+          error
+      })
+    }
+  };
+
+
+
 
   const createToken = (userId) => {
     return jwt.sign({userId},process.env.JWT_SECRET,{
@@ -76,4 +172,4 @@ const loginUser = async (req, res) => {
     })
   }
 
-export { createUser, loginUser,createToken, getDashboardPage };
+export { createUser, loginUser,createToken, getDashboardPage , getComputer, getLabs};

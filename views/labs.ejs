@@ -1,0 +1,96 @@
+<%- include('partials/_header') %>
+
+   <!-- body -->
+   <body class="main-layout inner_posituong">
+      <!-- loader  -->
+      <div class="loader_bg">
+         <div class="loader"><img src="/images/loading.gif" alt="#" /></div>
+      </div>
+      <!-- end loader -->
+      <!-- header -->
+      <%- include('partials/_navbar') %>
+
+      <!-- end header inner -->
+      <!-- products -->
+      <div class="products">
+         <div class="container-fluid">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="titlepage">
+                     <h2>COMPUTER LABORATORIES</h2>
+                  </div>
+               </div>
+            </div>
+            
+            <!-- Sidebar ve Products aynı satırda -->
+            <div class="row">
+               
+               <!-- Sidebar (Left) -->
+               <div class="col-lg-2 col-md-4">
+                  <div class="widget-search" style="background-color: #e6e6fa; padding: 15px; border-radius: 10px; color: #4b0082; margin-bottom: 20px;">
+                      <div class="site-search-area">
+                          <form method="get" id="site-searchform" action="#">
+                              <div>
+                                  <input class="input-text form-control" name="search-k" id="search-k" placeholder="Search keywords..." type="text" style="border-radius: 5px; border: 1px solid #5e2a99; padding: 10px;">
+                                  <input id="searchsubmit" value="Search" type="submit" style="border-radius: 5px; background-color: #4b0082; color: white; border: none; padding: 10px 15px; cursor: pointer;">
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+                  <div class="widget-categories" style="background-color: #e6e6fa; padding: 15px; border-radius: 10px; color: #4b0082;">
+                      <h3 class="widget-title">Categories</h3>
+                      <ul >
+                          <% for (let i = 0; i < categories.length; i++) { %>
+                          <li >
+                            
+                            <a href="/users/dashboard/computers?categories=<%= categories[i]._id %>" 
+                                style="color: <%= (category && category._id && categories[i]._id.toString() === category._id.toString()) ? '#00ff00' : '#6b0082' %>; text-decoration: none;">
+                                <%= categories[i].name %>
+                             </a>
+                             
+                             
+                             
+                          </li>
+                          <% } %>
+                      </ul>
+                  </div>
+              </div>
+              
+              
+               
+               <!-- Products (Right) -->
+               <div class="col-lg-10 col-md-8">
+                  <div class="our_products">
+                      <div class="row">
+                          <% for (computer of computers) { %>
+                          <div class="col-md-2 margin_bottom1">
+                              <div class="product_box" style="background-color: #e6e6fa; border-radius: 15px; position: relative; padding: 20px; border: 3px solid <%= computer.isUsed ? 'red' : 'green' %>; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
+                                  <figure>
+                                      <a href="/users/computer/<%= computer._id %>">
+                                          <img src="/images/pc.png" alt="#" />
+                                      </a>
+                                  </figure>
+                                  <h3><%= computer.name %></h3>
+                                  <h4><%= computer.description %></h4>
+                                  <h4><%= user.name %></h4>
+
+
+                              </div>
+                          </div>
+                          <% } %>
+                          
+                          <div class="col-md-12">
+                              <a class="read_more" href="#">See More</a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              
+              
+
+            </div>
+         </div>
+      </div>
+      <!-- end products -->
+      <!-- footer -->
+      <%- include('partials/_footer') %>

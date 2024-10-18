@@ -7,9 +7,12 @@
                  <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
                     <div class="full">
                        <div class="center-desk">
-                          <div class="logo">
-                             <a href="index.html"><img src="/images/logo.png" alt="#" /></a>
-                          </div>
+                        <div class="logo">
+                           <a href="index.html">
+                              <img src="/images/labiconn.png" alt="#" style="width: 80px; height: 80px;" />
+                           </a>
+                        </div>
+                        
                        </div>
                     </div>
                  </div>
@@ -27,23 +30,36 @@
                                 <a class="nav-link" href="/about">About</a>
                              </li>
                              <!-- <li class="nav-item <%= link === 'laptop' && 'active'  %>  ">
-                                <a class="nav-link" href="/computer">Computer</a>
+                                <a class="nav-link" href="/computer">Computer</a>   
                              </li> -->
                              <li class="nav-item <%= link === 'computers' && 'active'  %>  ">
-                                <a class="nav-link" href="/computers">Computers</a>
+                                <a class="nav-link" href="/computers">Computer Labs</a>
                              </li>
-                             <li class="nav-item <%= link === 'contact' && 'active'  %>  ">
+                             <!-- <li class="nav-item <%= link === 'contact' && 'active'  %>  ">
                                 <a class="nav-link" href="/contact">Contact Us</a>
-                             </li>
-                             <li class="nav-item d_none">
-                                <a class="nav-link" href="#"><i class="fa fa-search" aria-hidden="true"></i></a>
-                             </li>
+                             </li> -->
+                            <% if(user) {  %>
+                              <li class="nav-item <%= link === 'labs' && 'active'  %>  ">
+                                 <a class="nav-link" href="/users/labs">Labs</a>
+                               </li>
+                              <li class="nav-item <%= link === 'dashboard' && 'active'  %>  ">
+                                 <a class="nav-link" href="/users/dashboard">Dashboard</a>
+                               </li>
+                               
+                                 <a class="nav-link" href="/logout">Logout</a>
+                         <%  }  %>
+                         <% if(!user) {  %>
+                         
                              <li class="nav-item <%= link === 'register' && 'active'  %>  ">
-                              <a class="nav-link" href="/register">Register</a>
-                           </li>
-                           <li class="nav-item <%= link === 'login' && 'active'  %>  ">
-                              <a class="nav-link" href="/login">Login</a>
-                           </li>
+                                <a class="nav-link" href="/register">Register</a>
+                              </li>
+                              <li class="nav-item <%= link === 'login' && 'active'  %>  ">
+                                 <a class="nav-link" href="/login">Login</a>
+                              </li>
+                              <%  }  %>
+                              <!-- <li class="nav-item d_none">
+                                 <a class="nav-link" href="#"><i class="fa fa-search" aria-hidden="true"></i></a>
+                              </li> -->
                           </ul>
                        </div>
                     </nav>

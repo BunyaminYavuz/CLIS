@@ -42,9 +42,10 @@
                       <ul>
                           <% for (let i = 0; i < categories.length; i++) { %>
                           <li>
-                              <a href="/computers?categories=<%= categories[i]._id %>" style="color: #4b0082; text-decoration: none;">
-                                  <%= categories[i].name %>
-                              </a>
+                            <a href="/computers?categories=<%= categories[i]._id %>" 
+                                style="color: <%= (category && category._id && categories[i]._id.toString() === category._id.toString()) ? '#00ff00' : '#6b0082' %>; text-decoration: none;">
+                                <%= categories[i].name %>
+                             </a>
                           </li>
                           <% } %>
                       </ul>
@@ -54,31 +55,35 @@
               
                
                <!-- Products (Right) -->
-               <div class="col-lg-10 col-md-8">
-                  <div class="our_products">
-                      <div class="row">
-                          <% for (computer of computers) { %>
-                          <div class="col-md-2 margin_bottom1">
-                              <div class="product_box" style="background-color: #e6e6fa; border-radius: 15px; position: relative; padding: 20px; border: 3px solid <%= computer.isUsed ? 'red' : 'green' %>; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
-                                  <figure>
-                                      <a href="/computers/<%= computer._id %>">
-                                          <img src="images/pc.png" alt="#" />
-                                      </a>
-                                  </figure>
-                                  <h3><%= computer.name %></h3>
-                                  <h4><%= computer.description %></h4>
-                              </div>
-                          </div>
-                          <% } %>
-                          
-                          <div class="col-md-12">
-                              <a class="read_more" href="#">See More</a>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-              
-              
+               <div class="container mt-4">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card shadow-lg border-0" style="border-radius: 15px; background-color: #f3f4ff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);">
+                            <div class="card-body" style="position: relative; overflow: hidden; border-radius: 15px;">
+                                <img src="/images/pc.png" alt="Laboratuvar Arka Plan" class="img-fluid" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.2;">
+                                <div class="content text-center" style="position: relative; z-index: 1;">
+                                    <h2 class="mb-4" style="font-size: 2.5rem; font-weight: bold; color: #5c5c8a;"><%= category.name %></h2>
+                                    <p class="mb-3" style="font-size: 1.2rem; color: #4b0082;"><%= category.description %></p>
+                                    <ul class="list-unstyled" style="font-size: 1.2rem; color: #333;">
+                                        <li><i class="fas fa-user-friends"></i> <strong>Oturum Kapasitesi:</strong> <%= category.capacity %></li>
+                                        <li><i class="fas fa-computer"></i> <strong>Mevcut Bilgisayarlar:</strong> <%= category.availableComputers %></li>
+                                        <li><i class="fas fa-check-circle"></i> <strong>Açık mı:</strong> <%= category.isOpen ? 'Evet' : 'Hayır' %></li>
+                                        <li><i class="fas fa-exclamation-circle"></i> <strong>Laboratuvar Kuralları:</strong> <%= category.labRules || 'Belirtilmemiş' %></li>
+                                        <li><i class="fas fa-clock"></i> <strong>Açık Saatler:</strong> <%= category.schedule.openHours %></li>
+                                        <li><i class="fas fa-calendar-day"></i> <strong>Açık Günler:</strong> <%= category.schedule.openDays.join(', ') %></li>
+                                        <li><i class="fas fa-exclamation-triangle"></i> <strong>Güvenlik Uyarıları:</strong> <%= category.securityWarnings || 'Yok' %></li>
+                                        <li><i class="fas fa-phone-alt"></i> <strong>Acil İletişim:</strong> <%= category.emergencyContact || 'Belirtilmemiş' %></li>
+                                    </ul>
+                                    <div class="text-center mt-4">
+                                        <a href="#" class="btn btn-danger" style="font-size: 1.2rem; padding: 10px 20px; background-color: #ff4d4d; border-color: #ff4d4d; transition: background-color 0.3s, border-color 0.3s;">Geri</a>
+                                        <a href="#" class="btn btn-primary" style="font-size: 1.2rem; padding: 10px 20px; background-color: #6a5acd; border-color: #6a5acd; transition: background-color 0.3s, border-color 0.3s;">Derslik Programı</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             </div>
          </div>

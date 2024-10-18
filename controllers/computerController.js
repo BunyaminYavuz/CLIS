@@ -18,49 +18,43 @@ const createComputer = async (req, res) => {
 
 
 const getAllComputers = async (req, res) => {
-    try {
-      const categoryId = req.query.categories
+  try {
+      const categoryId = req.query.categories;
 
-      const category = await Category.findOne({_id:categoryId})
+      let category;
 
+      if (categoryId) {
+          category = await Category.findOne({ _id: categoryId });
+      } else {
+          category = await Category.findOne(); // Fetch the first category if categoryId is not provided
+      }
+
+      // Filter based on the category found
       let filter = {};
-
-      if(categoryId){
-        filter = {category:category._id}
+      if (category) {
+          filter = { category: category._id };
       }
 
       const computers = await Computer.find(filter);
-      const categories = await Category.find()
+      const categories = await Category.find();
+
+      // Render the template
       res.status(200).render("computers", {
-        computers,
-        categories,
-        link : 'computers'
-    })
-    } catch (error) {
+          computers,
+          categories,
+          category,
+          link: 'computers',
+      });
+  } catch (error) {
       res.status(500).json({
-          succeded : false,
-          error
-      })
-    }
-  };
-
-
-  const getComputer = async (req, res) => {
-    try {
-      const computer = await Computer.findById( {_id: req.params.id});
-      res.status(200).render("computer", {
-        computer,
-        link : 'computers'
-    })
-    } catch (error) {
-      res.status(400).json({
-          succeded : false,
-          error
-      })
-    }
-  };
+          succeeded: false,
+          error,
+      });
+  }
+};
 
 
 
 
-export { createComputer, getAllComputers, getComputer };
+
+export { createComputer, getAllComputers };
