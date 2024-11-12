@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import validator from "validator";
 
 const { Schema } = mongoose;
 
@@ -7,20 +8,24 @@ const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "The name field is required!"],
+      validate: [validator.isAlpha, "Only letters"]
     },
     lastname: {
       type: String,
-      required: true,
+      required: [true, "The lastname field is required!"],
+      validate: [validator.isAlpha, "Only letters"]
     },
     email: {
       type: String,
-      required: true,
+      required: [true, "The email field is required!"],
       unique: true,
+      validate: [validator.isEmail, "Valid email is required!"]
     },
     password: {
       type: String,
-      required: true,
+      required: [true, "The password field is required!"],
+      minLength: [4, "At least 4 characters!"]
     },
     profilePhoto: {
       type: String,
@@ -60,7 +65,7 @@ const userSchema = new Schema(
       },
       recentPCUsage: {
         type: [String],
-        default: ["ffrff","rhrth"], // Son kullanılan bilgisayarlar
+        default: ["01/01/2024 - 01/01/2024 3:52PM COM1-LAB1","02/01/2024 - 01/02/2024 2:45PM COM10-LAB2"], // Son kullanılan bilgisayarlar
       },
     },
     notifications: {

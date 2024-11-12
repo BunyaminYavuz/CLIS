@@ -24,20 +24,43 @@
             </div>
             <div class="row">
                <div class="col-md-10 offset-md-1">
-                  <form id="request" class="main_form" method="POST" action="/users/signup">
+                  <form id="request" class="main_form" method="POST" action="/users/signup" novalidate>
                      <div class="row">
-                        <div class="col-md-12 ">
-                           <input class="contactus" placeholder="First Name" type="type" name="name"> 
-                        </div>
-                        <div class="col-md-12 ">
-                           <input class="contactus" placeholder="Last Name" type="type" name="lastname"> 
-                        </div>
                         <div class="col-md-12">
-                           <input class="contactus" placeholder="Email" type="type" name="email"> 
+                           <div style="display: none;" class="alert alert-danger" id="name"></div>
                         </div>
+
+                        <div class="col-md-12 ">
+                           <input class="contactus" placeholder="First Name" type="text" name="name"> 
+                        </div>
+
+
                         <div class="col-md-12">
-                           <input class="contactus" placeholder="Password" type="type" name="password">                          
+                           <div style="display: none;" class="alert alert-danger" id="lastname"></div>
                         </div>
+
+                        <div class="col-md-12 ">
+                           <input class="contactus" placeholder="Last Name" type="text" name="lastname"> 
+                        </div>
+
+
+                        <div class="col-md-12">
+                           <div style="display: none;" class="alert alert-danger" id="email"></div>
+                        </div>
+
+                        <div class="col-md-12">
+                           <input class="contactus" placeholder="Email" type="email" name="email"> 
+                        </div>
+
+
+                        <div class="col-md-12">
+                         <div style="display: none;" class="alert alert-danger" id="password"></div>
+                      </div>
+
+                        <div class="col-md-12">
+                           <input class="contactus" placeholder="Password" type="password" name="password"> 
+                       </div>
+                       
                         
                         <div class="col-md-12">
                            <button class="send_btn">Send</button>
@@ -50,6 +73,77 @@
       </div>
       <!-- end contact -->
       <!--  footer -->
+
+<script>
+   const form = document.querySelector('form')
+   const emailError = document.querySelector('#email')
+   const passwordError = document.querySelector('#password')
+   const nameError = document.querySelector('#name')
+   const lastnameError = document.querySelector('#lastname')
+
+   form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      emailError.textContent = "";
+      passwordError.textContent = "";
+      nameError.textContent = "";
+      lastnameError.textContent = "";
+      emailError.style.display = "none"
+      passwordError.style.display = "none"
+      nameError.style.display = "none"
+      lastnameError.style.display = "none"
+
+      const email = form.email.value
+      const password = form.password.value
+      const name = form.name.value
+      const lastname = form.lastname.value
+
+      try {
+         const res = await fetch('/users/signup', {
+            method: "POST",
+            body: JSON.stringify({ email, password, name, lastname }),
+            headers: { "Content-Type": "application/json" }
+         })
+
+         const data = await res.json();
+
+         console.log("Data", data);
+         
+
+         if (data) {
+
+            if (data.email) {
+               emailError.textContent = data.email
+               emailError.style.display = "block"
+            }
+
+            if (data.password) {
+               passwordError.textContent = data.password
+               passwordError.style.display = "block"
+            }
+
+            if (data.name) {
+               nameError.textContent = data.name
+               nameError.style.display = "block"
+            }
+
+            if (data.lastname) {
+               lastnameError.textContent = data.lastname
+               lastnameError.style.display = "block"
+            }
+
+
+         }
+
+         if (data.user) {
+            location.assign("/login")
+         }
+
+      } catch (err) {
+         console.log("ERR::", err)
+      }
+   })
+</script>
       <%- include('partials/_footer') %>
 
 
