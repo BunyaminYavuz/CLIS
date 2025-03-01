@@ -1,14 +1,12 @@
 import mongoose from "mongoose";
 
 const conn = () => {
-    mongoose.connect(process.env.DB_URL,{
-        dbName:"clis",
-        useNewUrlParser:true,
-        useUnifiedTopology:true
+    mongoose.connect(process.env.DB_URL, {
+        dbName: "clis"
     }).then(() => {
         console.log("Connected to the DB successfully")
-    }).catch((err)=>{
-        console.log(`Connection error to the DB ${err}`);
+    }).catch((err) => {
+        console.log(`DB connection error: ${err}`);
     })
 }
 

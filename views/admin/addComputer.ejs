@@ -1,0 +1,29 @@
+<%- include('../partials/_header') %>
+<body>
+  <h1>Yeni Bilgisayar Ekle</h1>
+  <form action="/admin/create-computer" method="POST">
+    <div class="mb-3">
+      <label class="form-label">Bilgisayar Adı</label>
+      <input type="text" class="form-control" name="name" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Laboratuvar Seçin</label>
+      <select class="form-select" name="labId" required>
+        <option value="">Laboratuvar Seçin</option>
+        <% labs.forEach(lab => { %>
+          <option value="<%= lab._id %>"><%= lab.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Özellikler</label>
+      <textarea class="form-control" name="specs" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Konum</label>
+      <input type="text" class="form-control" name="location">
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+  </form>
+  <%- include('../partials/_footer') %>
+</body> 

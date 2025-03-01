@@ -5,7 +5,8 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "create-admin": "node scripts/createAdmin.js"
   },
   "author": "Bunyamin&Omer",
   "license": "ISC",
@@ -18,6 +19,7 @@
     "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.0",
+    "pdfkit": "^0.16.0",
     "validator": "^13.12.0"
   },
   "devDependencies": {

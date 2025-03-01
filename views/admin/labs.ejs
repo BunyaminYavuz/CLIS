@@ -1,0 +1,32 @@
+<%- include('../partials/_header') %>
+<body class="main-layout inner_posituong">
+  <%- include('../partials/_navbar') %>
+
+  <div class="container mt-5">
+    <h2>Laboratuvarlar</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Laboratuvar Adı</th>
+          <th>Açıklama</th>
+          <th>Kapasite</th>
+          <th>Detaylar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% labs.forEach(lab => { %>
+          <tr>
+            <td><%= lab.name %></td>
+            <td><%= lab.description %></td>
+            <td><%= lab.capacity %></td>
+            <td>
+              <a href="/admin/labs/<%= lab._id %>" class="btn btn-primary">Detayları Gör</a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <%- include('../partials/_footer') %>
+</body> 

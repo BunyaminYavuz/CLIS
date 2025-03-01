@@ -1,4 +1,4 @@
-<%- include('partials/_header') %>
+<%- include('partials/_header') %>
 
    <!-- body -->
    <body class="main-layout inner_posituong contact_page">
@@ -8,7 +8,7 @@
       </div>
       <!-- end loader -->
       <!-- header -->
-      <%- include('partials/_navbar') %>
+      <%- include('partials/_navbar') %>
 
       <!-- end header inner -->
       <!-- end header -->
@@ -18,24 +18,24 @@
             <div class="row">
                <div class="col-md-12">
                   <div class="titlepage">
-                     <h2>Contact Now</h2>
+                     <h2>Giriş Yap</h2>
                   </div>
                </div>
             </div>
             <div class="row">
                <div class="col-md-10 offset-md-1">
-                  <form id="request" class="main_form" method="POST" action="/users/login">
+                  <form id="loginForm" class="main_form">
                      <div class="row">
-         
                         <div class="col-md-12">
-                           <input class="contactus" placeholder="Email" type="type" name="email"> 
+                           <input class="contactus" placeholder="Email" type="email" name="email" required>
+                           <span id="emailError" class="text-danger" style="display: none;"></span>
                         </div>
                         <div class="col-md-12">
-                           <input class="contactus" placeholder="Password" type="type" name="password">                          
+                           <input class="contactus" placeholder="Şifre" type="password" name="password" required>
+                           <span id="passwordError" class="text-danger" style="display: none;"></span>
                         </div>
-                        
                         <div class="col-md-12">
-                           <button class="send_btn">LOGIN</button>
+                           <button type="submit" class="send_btn">Giriş Yap</button>
                         </div>
                      </div>
                   </form>
@@ -45,6 +45,60 @@
       </div>
       <!-- end contact -->
       <!--  footer -->
-      <%- include('partials/_footer') %>
+      <%- include('partials/_footer') %>
+
+      <script>
+         const form = document.getElementById('loginForm');
+         const emailError = document.getElementById('emailError');
+         const passwordError = document.getElementById('passwordError');
+
+         form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Hata mesajlarını temizle
+            emailError.style.display = 'none';
+            passwordError.style.display = 'none';
+
+            try {
+               const res = await fetch('/users/login', {
+                  method: 'POST',
+                  headers: {
+                     'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                     email: form.email.value,
+                     password: form.password.value
+                  })
+               });
+
+               const data = await res.json();
+               console.log('Login response:', data); // Debug için
+
+               if (data.succeeded) {
+                  // Başarılı giriş, yönlendirme yap
+                  window.location.href = data.redirectUrl;
+               } else {
+                  // Hata mesajlarını göster
+                  const errorMessage = data.error || 'Giriş yapılırken bir hata oluştu';
+                  if (errorMessage.toLowerCase().includes('email')) {
+                     emailError.textContent = errorMessage;
+                     emailError.style.display = 'block';
+                  } else if (errorMessage.toLowerCase().includes('şifre')) {
+                     passwordError.textContent = errorMessage;
+                     passwordError.style.display = 'block';
+                  } else {
+                     // Genel hata mesajı
+                     emailError.textContent = errorMessage;
+                     emailError.style.display = 'block';
+                  }
+               }
+            } catch (error) {
+               console.error('Login error:', error);
+               emailError.textContent = 'Bir hata oluştu, lütfen tekrar deneyin';
+               emailError.style.display = 'block';
+            }
+         });
+      </script>
+   </body>
 
 

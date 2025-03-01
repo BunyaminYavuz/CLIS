@@ -4,54 +4,95 @@ import jwt from "jsonwebtoken"
 
 const checkUser = async (req, res, next) => {
     try {
-        const token = req.cookies.jwt
+        const token = req.cookies.jwt;
 
-        if (token) {
-            jwt.verify(token, process.env.JWT_SECRET, async(err,decodedToken) => {
-                if (err) {
-                    res.locals.user = null;
-                    next();
-                } else {
-                    const user = await User.findById(decodedToken.userId)
-                    res.locals.user = user
-                    next();
-                }
-            })
-        } 
-        else {
+        if (!token) {
             res.locals.user = null;
-            next();
+            return next();
         }
-    } 
-    catch (error) {
+
+        // Token'ı doğrula
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         
+        if (!decodedToken || !decodedToken.userId) {
+            res.locals.user = null;
+            return next();
+        }
+
+        // Kullanıcıyı bul
+        const user = await User.findById(decodedToken.userId);
+        
+        if (!user) {
+            res.locals.user = null;
+            return next();
+        }
+
+        // Kullanıcı bilgilerini locals'a kaydet
+        res.locals.user = user;
+        next();
+    } catch (error) {
+        console.error("CheckUser error:", error);
+        res.locals.user = null;
+        next();
     }
 }
 
 const authenticateToken = async (req, res, next) => {
-   try{
-    const token = req.cookies.jwt
+    try {
+        const token = req.cookies.jwt;
 
-    if(token) {
-       jwt.verify(token, process.env.JWT_SECRET , (err) => {
-        if(err) {
-            res.redirect("/login")
-        }else{
-            next();
+        if (!token) {
+            return res.redirect("/login");
         }
-    }) 
+
+        jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+            if (err) {
+                return res.redirect("/login");
+            }
+
+            const user = await User.findById(decodedToken.userId);
+            if (!user) {
+                return res.redirect("/login");
+            }
+
+            req.user = user;
+            next();
+        });
+    } catch (error) {
+        console.error("Auth error:", error);
+        res.status(401).json({
+            succeeded: false,
+            error: "Yetkilendirme hatası"
+        });
     }
-    else{
-        res.redirect("/login");
-    }
-    
-   }
-   catch (error) {
-    res.status(401).json({
-        succeeded:false,
-        error:"No authorizated"
-    })
-   }
 }
 
-export {authenticateToken,checkUser}
+const authenticateRoles = (...roles) => {
+    return async (req, res, next) => {
+        try {
+            const token = req.cookies.jwt;
+
+            if (!token) {
+                return res.redirect("/login");
+            }
+
+            const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+            const user = await User.findById(decodedToken.userId);
+
+            if (!user || !roles.includes(user.role)) {
+                return res.status(403).json({
+                    succeeded: false,
+                    error: "Bu sayfaya erişim yetkiniz yok"
+                });
+            }
+
+            req.user = user;
+            next();
+        } catch (error) {
+            console.error("Role auth error:", error);
+            return res.redirect("/login");
+        }
+    };
+};
+
+export {authenticateToken,checkUser, authenticateRoles}

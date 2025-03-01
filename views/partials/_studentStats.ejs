@@ -1,0 +1,99 @@
+<!-- İstatistik Kartları -->
+<div class="row mt-4">
+  <div class="col-md-3">
+    <div class="card bg-primary text-white">
+      <div class="card-body text-center">
+        <i class="fas fa-clock fa-3x mb-3"></i>
+        <h5 class="card-title"><%= title || 'Toplam Süre' %></h5>
+        <p class="h4" id="totalDuration">
+          <%= formatDuration(totalDuration) %>
+        </p>
+        <small class="text-white-50">
+          <%= avgPerDay ? `Günlük ortalama: ${formatDuration(avgPerDay)}` : '' %>
+        </small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-success text-white">
+      <div class="card-body text-center">
+        <i class="fas fa-desktop fa-3x mb-3"></i>
+        <h5 class="card-title">Oturum Sayısı</h5>
+        <p class="h4" id="totalSessions"><%= sessionCount %></p>
+        <small class="text-white-50">
+          <%= mostUsedLab ? `En çok: ${mostUsedLab}` : '' %>
+        </small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-info text-white">
+      <div class="card-body text-center">
+        <i class="fas fa-chart-line fa-3x mb-3"></i>
+        <h5 class="card-title">Ortalama Süre</h5>
+        <p class="h4" id="avgDuration">
+          <%= formatDuration(avgDuration) %>
+        </p>
+        <small class="text-white-50">
+          <%= peakHours ? `Yoğun saatler: ${peakHours}` : '' %>
+        </small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-warning text-white">
+      <div class="card-body text-center">
+        <i class="fas fa-calendar-check fa-3x mb-3"></i>
+        <h5 class="card-title">Son Kullanım</h5>
+        <p class="h4">
+          <%= lastUsage ? formatDate(lastUsage) : '-' %>
+        </p>
+        <small class="text-white-50">
+          <%= lastLab ? lastLab : '' %>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ortak Stiller -->
+<style>
+  .badge {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+  }
+
+  .badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .badge i {
+    margin-right: 5px;
+  }
+
+  .bg-gradient {
+    background-size: 200% auto;
+    animation: gradient 2s ease infinite;
+  }
+
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .card small {
+    display: block;
+    margin-top: 10px;
+  }
+
+  .card .fa-3x {
+    opacity: 0.8;
+  }
+</style> 

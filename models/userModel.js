@@ -6,6 +6,11 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
+    studentNumber: {
+      type: String,
+      unique: true,
+      sparse: true, // Sadece öğrenciler için gerekli
+    },
     name: {
       type: String,
       required: [true, "The name field is required!"],
@@ -25,7 +30,8 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: [true, "The password field is required!"],
-      minLength: [4, "At least 4 characters!"]
+      minLength: [4, "At least 4 characters!"],
+      select: false // Bu satırı ekledik - varsayılan olarak şifreyi getirme
     },
     profilePhoto: {
       type: String,
@@ -33,8 +39,8 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "user"],
-      default: "user", // Kullanıcı rolü (admin veya kullanıcı)
+      enum: ["student", "operator", "admin"],
+      default: "student",
     },
     accountStatus: {
       type: String,
@@ -72,6 +78,23 @@ const userSchema = new Schema(
       type: [String],
       default: [], // Kullanıcının bildirimleri ve duyuruları
     },
+    currentComputer: {
+      type: Schema.Types.ObjectId,
+      ref: "Computer",
+      default: null
+    },
+    labUsageHistory: [{
+      computer: {
+        type: Schema.Types.ObjectId,
+        ref: "Computer"
+      },
+      startTime: Date,
+      endTime: Date,
+      operator: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    }]
   },
   {
     timestamps: true,

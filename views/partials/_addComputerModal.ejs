@@ -1,0 +1,78 @@
+<!-- Yeni Bilgisayar Modal -->
+<div class="modal fade" id="addComputerModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-desktop"></i> Yeni Bilgisayar Ekle
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addComputerForm">
+          <div class="mb-3">
+            <label class="form-label">Bilgisayar Adi</label>
+            <input type="text" class="form-control" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Laboratuvar Seçin</label>
+            <select class="form-select" name="labId" required>
+              <option value="">Laboratuvar Seçin</option>
+              <% labs.forEach(lab => { %>
+                <option value="<%= lab._id %>"><%= lab.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Özellikler</label>
+            <textarea class="form-control" name="specs" rows="3"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Konum</label>
+            <input type="text" class="form-control" name="location">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Notlar</label>
+            <textarea class="form-control" name="notes" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-success" onclick="createComputer()">
+          <i class="fas fa-save"></i> Kaydet
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function createComputer() {
+  const form = document.getElementById('addComputerForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+
+  try {
+    const response = await fetch('/admin/create-computer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (result.succeeded) {
+      alert('Bilgisayar başarıyla eklendi');
+      location.reload();
+    } else {
+      alert('Bilgisayar eklenirken bir hata oluştu');
+    }
+  } catch (error) {
+    console.error('Bilgisayar ekleme hatası:', error);
+    alert('Bilgisayar eklenirken bir hata oluştu');
+  }
+}
+</script> 

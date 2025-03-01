@@ -1,0 +1,97 @@
+<%- include('../partials/_header') %>
+<body class="main-layout inner_posituong">
+    <%- include('../partials/_navbar') %>
+    
+    <div class="container mt-5">
+        <h2><i class="fas fa-chart-bar"></i> Raporlar</h2>
+
+        <!-- Rapor Oluşturma Formu -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Yeni Rapor Oluştur</h5>
+            </div>
+            <div class="card-body">
+                <form id="generateReportForm">
+                    <div class="mb-3">
+                        <label class="form-label">Başlangıç Tarihi</label>
+                        <input type="date" class="form-control" name="startDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bitiş Tarihi</label>
+                        <input type="date" class="form-control" name="endDate" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Rapor Oluştur</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Raporlar Listesi -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Raporlar</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Öğrenci Numarası</th>
+                            <th>Toplam Kullanım Süresi (saat)</th>
+                            <th>Oturum Sayısı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% labUsage.forEach(report => { %>
+                            <tr>
+                                <td><%= report._id %></td>
+                                <td><%= (report.totalUsage / 3600000).toFixed(2) %></td>
+                                <td><%= report.usageCount %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/_footer') %>
+
+    <script>
+        document.getElementById('generateReportForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            if (confirm('Raporu PDF formatında indirmek ister misiniz?')) {
+                try {
+                    const response = await fetch('/admin/generate-report', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        // Create a blob from the response
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = 'rapor.pdf'; // Set the file name
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        alert('Rapor başarıyla oluşturuldu ve indiriliyor.');
+                    } else {
+                        const result = await response.json();
+                        alert(result.error || 'Rapor oluşturulurken bir hata oluştu');
+                    }
+                } catch (error) {
+                    console.error('Rapor oluşturma hatası:', error);
+                    alert('Rapor oluşturulurken bir hata oluştu');
+                }
+            }
+        });
+    </script>
+</body> 
