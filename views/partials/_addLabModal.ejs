@@ -1,0 +1,77 @@
+<!-- Yeni Laboratuvar Modal -->
+<div class="modal fade" id="addLabModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-building"></i> Yeni Laboratuvar Ekle
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addLabForm">
+          <div class="mb-3">
+            <label class="form-label">Laboratuvar Adi</label>
+            <input type="text" class="form-control" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Açıklama</label>
+            <textarea class="form-control" name="description" rows="3" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Location</label>
+            <textarea class="form-control" name="location" rows="3" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Kapasite</label>
+            <input type="number" class="form-control" name="capacity" required>
+          </div>
+          <!-- <div class="mb-3">
+            <label class="form-label">Açık mı?</label>
+            <input type="checkbox" class="form-check-input" name="isOpen" checked>
+          </div> -->
+          <div class="mb-3">
+            <label class="form-label">Kapanma Saati</label>
+            <input type="time" class="form-control" name="closingTime">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-success" onclick="createLab()">
+          <i class="fas fa-save"></i> Kaydet
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function createLab() {
+  const form = document.getElementById('addLabForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+
+  try {
+    const response = await fetch('/admin/create-lab', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (result.succeeded) {
+      alert('Laboratuvar başarıyla eklendi');
+      location.reload();
+    } else {
+      alert('Laboratuvar eklenirken bir hata oluştu');
+    }
+  } catch (error) {
+    console.error('Laboratuvar ekleme hatası:', error);
+    alert('Laboratuvar eklenirken bir hata oluştu');
+  }
+}
+</script> 

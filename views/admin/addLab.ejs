@@ -1,0 +1,29 @@
+<%- include('../partials/_header') %>
+<body>
+  <h1>Yeni Laboratuvar Ekle</h1>
+  <form action="/admin/create-lab" method="POST">
+    <div class="mb-3">
+      <label class="form-label">Laboratuvar Adı</label>
+      <input type="text" class="form-control" name="name" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Açıklama</label>
+      <textarea class="form-control" name="description" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Kapasite</label>
+      <input type="number" class="form-control" name="capacity" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Acik mi?</label>
+      <input type="checkbox" class="form-check-input" name="isOpen" value="true">
+      <label class="form-check-label">Laboratuvar açık olacak mı?</label>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Kapanma Saati</label>
+      <input type="time" class="form-control" name="closingTime">
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+  </form>
+  <%- include('../partials/_footer') %>
+</body> 

@@ -8,9 +8,7 @@
                     <div class="full">
                        <div class="center-desk">
                         <div class="logo">
-                           <a href="index.html">
-                              <img src="/images/labiconn.png" alt="#" style="width: 80px; height: 80px;" />
-                           </a>
+                           <a href="/"><img src="/images/logo.png" alt="#" /></a>
                         </div>
                         
                        </div>
@@ -23,43 +21,44 @@
                        </button>
                        <div class="collapse navbar-collapse" id="navbarsExample04">
                           <ul class="navbar-nav mr-auto">
-                             <li class="nav-item <%= link === 'index' && 'active'  %> ">
-                                <a class="nav-link " href="/">Home</a>
-                             </li>
-                             <li class="nav-item  <%= link === 'about' && 'active'  %>  ">
-                                <a class="nav-link" href="/about">About</a>
-                             </li>
-                             <!-- <li class="nav-item <%= link === 'laptop' && 'active'  %>  ">
-                                <a class="nav-link" href="/computer">Computer</a>   
-                             </li> -->
-                             <li class="nav-item <%= link === 'computers' && 'active'  %>  ">
-                                <a class="nav-link" href="/computers">Computer Labs</a>
-                             </li>
-                             <!-- <li class="nav-item <%= link === 'contact' && 'active'  %>  ">
-                                <a class="nav-link" href="/contact">Contact Us</a>
-                             </li> -->
-                            <% if(user) {  %>
-                              <li class="nav-item <%= link === 'labs' && 'active'  %>  ">
-                                 <a class="nav-link" href="/users/labs">Labs</a>
+                             <% if (user) { %>
+                               <% if (user.role === 'admin') { %>
+                                 <li class="nav-item <%= link === 'admin-dashboard' ? 'active' : '' %>">
+                                    <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+                                  </li>
+                                  <li class="nav-item <%= link === 'admin-reports' ? 'active' : '' %>">
+                                    <a class="nav-link" href="/admin/reports">Raporlar</a>
+                                  </li>
+                                  <li class="nav-item <%= link === 'admin-lab-details' ? 'active' : '' %>">
+                                    <a class="nav-link" href="/admin/labs">Laboratuvar Detayları</a>
+                                  </li>
+                               <% } else if (user.role === 'operator') { %>
+                                 <li class="nav-item <%= link === 'operator-dashboard' ? 'active' : '' %>">
+                                    <a class="nav-link" href="/operator/dashboard">Bilgisayar Yönetimi</a>
+                                  </li>
+                               <% } else if (user.role === 'student') { %>
+                                 <li class="nav-item <%= link === 'student-dashboard' ? 'active' : '' %>">
+                                    <a class="nav-link" href="/student/dashboard">Ana Sayfa</a>
+                                  </li>
+                                  <li class="nav-item <%= link === 'student-history' ? 'active' : '' %>">
+                                    <a class="nav-link" href="/student/lab-history">Kullanım Geçmişi</a>
+                                  </li>
+                                  <li class="nav-item <%= link === 'lab-computer-status' ? 'active' : '' %>">
+                                    <a class="nav-link" href="/student/lab-computer-status">Laboratuvar Bilgisayar Durumları</a>
+                                  </li>
+                               <% } %>
+                               <li class="nav-item">
+                                  <a class="nav-link" href="/logout">Çıkış Yap</a>
                                </li>
-                              <li class="nav-item <%= link === 'dashboard' && 'active'  %>  ">
-                                 <a class="nav-link" href="/users/dashboard">Dashboard</a>
-                               </li>
-                               
-                                 <a class="nav-link" href="/logout">Logout</a>
-                         <%  }  %>
-                         <% if(!user) {  %>
-                         
-                             <li class="nav-item <%= link === 'register' && 'active'  %>  ">
-                                <a class="nav-link" href="/register">Register</a>
-                              </li>
-                              <li class="nav-item <%= link === 'login' && 'active'  %>  ">
-                                 <a class="nav-link" href="/login">Login</a>
-                              </li>
-                              <%  }  %>
-                              <!-- <li class="nav-item d_none">
-                                 <a class="nav-link" href="#"><i class="fa fa-search" aria-hidden="true"></i></a>
-                              </li> -->
+                             <% } else { %>
+                             
+                                 <li class="nav-item">
+                                    <a class="nav-link" href="/login">Giriş Yap</a>
+                                 </li>
+                                 <li class="nav-item">
+                                    <a class="nav-link" href="/register">Kayıt Ol</a>
+                                 </li>
+                             <% } %>
                           </ul>
                        </div>
                     </nav>

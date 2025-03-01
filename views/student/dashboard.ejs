@@ -1,0 +1,162 @@
+<%- include('../partials/_header') %>
+<body class="main-layout inner_posituong">
+  <%- include('../partials/_navbar') %>
+  
+  <div class="container mt-5">
+    <h2>Öğrenci Dashboard</h2>
+    
+    <!-- Active Session Information -->
+    <% if (activeSession) { %>
+      <div class="card mt-4 border-primary">
+        <div class="card-body">
+          <h4 class="card-title text-primary">Aktif Oturum</h4>
+          <p class="card-text">
+            <strong>Bilgisayar:</strong> <%= activeSession.computer.name %><br>
+            <strong>Laboratuvar:</strong> <%= activeSession.computer.lab.name %><br>
+            <strong>Başlangıç:</strong> <%= formatDate(activeSession.startTime) %>
+          </p>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Today's Sessions -->
+    <div class="card mt-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="card-title mb-0">Bugünün Oturumları</h5>
+      </div>
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Bilgisayar</th>
+              <th>Laboratuvar</th>
+              <th>Başlangıç</th>
+              <th>Bitiş</th>
+              <th>Süre</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% todaySessions.forEach(session => { %>
+              <tr>
+                <td><%= session.computer?.name || 'Bilinmiyor' %></td>
+                <td><%= session.computer?.lab?.name || 'Bilinmiyor' %></td>
+                <td><%= formatDate(session.startTime) %></td>
+                <td><%= session.endTime ? formatDate(session.endTime) : 'Devam Ediyor' %></td>
+                <td>
+                  <%= session.endTime ? formatDuration(new Date(session.endTime) - new Date(session.startTime)) : 'Devam Ediyor' %>
+                </td>
+              </tr>
+            <% }) %>
+            <% if (todaySessions.length === 0) { %>
+              <tr>
+                <td colspan="5" class="text-center text-muted">Bugün henüz oturum kaydı bulunmuyor.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  
+  </div>
+
+  <%- include('../partials/_footer') %>
+
+  <script>
+    // Süre formatlamak için yardımcı fonksiyon
+    function formatDuration(milliseconds) {
+      const hours = Math.floor(milliseconds / (1000 * 60 * 60));
+      const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+      
+      if (hours === 0) {
+        return `${minutes} dakika`;
+      }
+      return `${hours} saat ${minutes} dakika`;
+    }
+
+    // Tarih formatlamak için yardımcı fonksiyon
+    function formatDate(date) {
+      const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      return new Date(date).toLocaleDateString('tr-TR', options);
+    }
+
+    // Aktif oturum süresini güncelle
+    function updateSessionDuration() {
+      const sessionStart = new Date('<%= user.currentComputer ? user.labUsageHistory.find(h => !h.endTime).startTime : null %>');
+      if (sessionStart) {
+        const duration = new Date() - sessionStart;
+        const hours = Math.floor(duration / (1000 * 60 * 60));
+        const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((duration % (1000 * 60)) / 1000);
+        
+        let durationText = '';
+        if (hours > 0) durationText += `${hours} saat `;
+        if (minutes > 0) durationText += `${minutes} dakika `;
+        durationText += `${seconds} saniye`;
+        
+        document.getElementById('sessionDuration').textContent = durationText;
+      }
+    }
+
+    if (document.getElementById('sessionDuration')) {
+      updateSessionDuration();
+      setInterval(updateSessionDuration, 1000);
+    }
+  </script>
+
+  <style>
+    .badge {
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      border-radius: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .badge:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .badge i {
+      margin-right: 5px;
+    }
+
+    .bg-gradient {
+      background-size: 200% auto;
+      animation: gradient 2s ease infinite;
+    }
+
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* Devam eden oturum için animasyonlu arka plan */
+    .badge.bg-gradient {
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* Tamamlanan oturum için yumuşak geçişli arka plan */
+    .badge:not(.bg-gradient) {
+      transition: background 0.3s ease;
+    }
+  </style>
+</body> 

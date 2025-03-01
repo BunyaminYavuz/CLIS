@@ -1,188 +1,252 @@
 import User from "../models/userModel.js";
-import Category from "../models/categoryModel.js"
 import Computer from "../models/computerModel.js"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
+import Lab from "../models/labModel.js";
 
 const createUser = async (req, res) => {
   try {
-    const user = await User.create(req.body);
+    const userData = {
+      ...req.body,
+      role: req.body.role || 'student'
+    };
+
+    const user = await User.create(userData);
     res.status(201).json({
-      succeded: true,
-      user : user._id,
+      succeeded: true,
+      user: user._id,
     });
   } catch (error) {
-    let errors2 = {}
+    let errors2 = {};
 
     if (error.code === 11000) {
-      errors2.email = "The Email is already registered!"
-    }    
-
+      if (error.keyPattern.email) {
+        errors2.email = "Bu email adresi zaten kayıtlı!";
+      }
+      if (error.keyPattern.studentNumber) {
+        errors2.studentNumber = "Bu öğrenci numarası zaten kayıtlı!";
+      }
+    }
 
     if (error.name === "ValidationError") {
       Object.keys(error.errors).forEach((key) => {
-        errors2[key] = error.errors[key].message
-      })
+        errors2[key] = error.errors[key].message;
+      });
     }
 
-    console.log("Errors2", errors2);
-    
-
-    res.status(400).json(errors2)
+    console.log("Validation Errors:", errors2);
+    res.status(400).json(errors2);
   }
 };
 
 const loginUser = async (req, res) => {
-    try {
-      const {email, password} = req.body;
+  try {
+    const { email, password } = req.body;
+    console.log("Login attempt with email:", email);
 
-      const user = await User.findOne({email : email})
-
-      let same = false
-
-      if (user)  {
-        same = await bcrypt.compare(password, user.password)
-      } else{
-        return res.status(401).json({
-            succeded: false,
-            error: "There is no user"
-        })
-        
-      }
-
-
-      if (same) {
-
-        const token = createToken(user._id);
-        res.cookie("jwt", token, {
-          httpOnly:true,
-          maxAge:1000 * 60 * 60 * 24
-        })
-
-        res.redirect("/users/dashboard")
-      } else {
-        res.status(401).json({
-            succeded: true,
-            error: "Password are not matched!"
-        })
-      }
-
-
-
-
-    } catch (error) {
-      res.status(400).json({
-        succeded: false,
-        error,
+    if (!email || !password) {
+      return res.status(400).json({
+        succeeded: false,
+        error: "Email ve şifre gereklidir"
       });
     }
-  };
 
-
-  const getDashboardPage = async (req, res) => {
-    try {
-        let categoryId = req.query.categories || null; // Default to null if no categoryId is provided
-        let category = null;
-        let filter = {};
-
-
-        if (categoryId) {
-            category = await Category.findOne({ _id: categoryId });
-            if (category) {
-                filter = { category: category._id }; // Apply filter if the category exists
-            }
-        } else {
-            // If no categoryId, select the first category as default
-            category = await Category.findOne();
-            if (category) {
-                categoryId = category._id; // Set the first category as the active one
-                filter = { category: category._id };
-            }
-        }
-
-        const computers = await Computer.find(filter); // Fetch computers for the selected category
-        const categories = await Category.find(); // Fetch all categories
-
-        // Render the template with the data
-        res.status(200).render("dashboard", {
-            computers,
-            categories,
-            category, // Ensure category is passed to the view, even if it's null
-            categoryId,
-            link: 'dashboard',
-        });
-    } catch (error) {
-        res.status(500).json({
-            succeeded: false,
-            error,
-        });
+    const user = await User.findOne({ email }).select('+password');
+    console.log("Fetched user:", user);
+    
+    if (!user) {
+      console.log("User not found");
+      return res.status(401).json({
+        succeeded: false,
+        error: "Böyle bir kullanıcı bulunamadı"
+      });
     }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    if (!isPasswordValid) {
+      console.log("Password mismatch");
+      return res.status(401).json({
+        succeeded: false,
+        error: "Şifre yanlış"
+      });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24
+    });
+
+    let redirectUrl = "/";
+    switch (user.role) {
+      case "admin":
+        redirectUrl = "/admin/dashboard";
+        break;
+      case "operator":
+        redirectUrl = "/operator/dashboard";
+        break;
+      case "student":
+        redirectUrl = "/student/dashboard";
+        break;
+    }
+
+    const userToSend = {
+      _id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      role: user.role
+    };
+
+    res.status(200).json({
+      succeeded: true,
+      user: userToSend,
+      redirectUrl
+    });
+
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({
+      succeeded: false,
+      error: "Giriş işlemi sırasında bir hata oluştu"
+    });
+  }
 };
 
+const logout = async (req, res) => {
+  try {
+    res.cookie('jwt', '', {
+      maxAge: 1,
+      httpOnly: true
+    });
+    res.redirect('/');
+  } catch (error) {
+    res.status(500).json({
+      succeeded: false,
+      error: "Çıkış yapılırken bir hata oluştu"
+    });
+  }
+};
 
+const getDashboardPage = async (req, res) => {
+  try {
+    let labId = req.query.labs || null; // Default to null if no labId is provided
+    let lab = null;
+    let filter = {};
 
-
-  const getLabs = async (req, res) => {
-    try {
-        const categoryId = req.query.categories;
-  
-        let category;
-
-  
-        if (categoryId) {
-            category = await Category.findOne({ _id: categoryId });
-        } else {
-            category = await Category.findOne(); // Fetch the first category if categoryId is not provided
-        }
-  
-        // Filter based on the category found
-        let filter = {};
-        if (category) {
-            filter = { category: category._id };
-        }
-  
-        const computers = await Computer.find(filter);
-        const categories = await Category.find();
-  
-        // Render the template
-        res.status(200).render("labs", {
-            computers,
-            categories,
-            category,
-            categoryId,
-            link: 'labs',
-        });
-    } catch (error) {
-        res.status(500).json({
-            succeeded: false,
-            error,
-        });
+    if (labId) {
+      lab = await Lab.findOne({ _id: labId });
+      if (lab) {
+        filter = { lab: lab._id }; // Apply filter if the lab exists
+      }
+    } else {
+      // If no labId, select the first lab as default
+      lab = await Lab.findOne();
+      if (lab) {
+        labId = lab._id; // Set the first lab as the active one
+        filter = { lab: lab._id };
+      }
     }
-  };
 
+    const computers = await Computer.find(filter); // Fetch computers for the selected lab
+    const labs = await Lab.find(); // Fetch all labs
 
-  const getComputer = async (req, res) => {
-    try {
-      const computer = await Computer.findById( {_id: req.params.id});
-      res.status(200).render("computer", {
-        computer,
-        link : 'labs'
+    // Render the template with the data
+    res.status(200).render("dashboard", {
+      computers,
+      labs,
+      lab, // Ensure lab is passed to the view, even if it's null
+      labId,
+      link: 'dashboard',
+    });
+  } catch (error) {
+    res.status(500).json({
+      succeeded: false,
+      error,
+    });
+  }
+};
+
+const getLabs = async (req, res) => {
+  try {
+    const categoryId = req.query.categories;
+
+    let category;
+
+    if (categoryId) {
+      category = await Lab.findOne({ _id: categoryId });
+    } else {
+      category = await Lab.findOne(); // Fetch the first category if categoryId is not provided
+    }
+
+    // Filter based on the category found
+    let filter = {};
+    if (category) {
+      filter = { category: category._id };
+    }
+
+    const computers = await Computer.find(filter);
+    const categories = await Lab.find();
+
+    // Render the template
+    res.status(200).render("labs", {
+      computers,
+      categories,
+      category,
+      categoryId,
+      link: 'labs',
+    });
+  } catch (error) {
+    res.status(500).json({
+      succeeded: false,
+      error,
+    });
+  }
+};
+
+const getComputer = async (req, res) => {
+  try {
+    const computer = await Computer.findById( {_id: req.params.id});
+    res.status(200).render("computer", {
+      computer,
+      link : 'labs'
     })
-    } catch (error) {
-      res.status(400).json({
-          succeded : false,
-          error
-      })
-    }
-  };
-
-
-
-
-  const createToken = (userId) => {
-    return jwt.sign({userId},process.env.JWT_SECRET,{
-      expiresIn:"1d",
+  } catch (error) {
+    res.status(400).json({
+      succeded : false,
+      error
     })
   }
+};
 
-export { createUser, loginUser,createToken, getDashboardPage , getComputer, getLabs};
+const createLab = async (req, res) => {
+  try {
+    const { name, description, capacity, isOpen, closingTime } = req.body;
+
+    const lab = await Lab.create({
+      name,
+      description,
+      capacity,
+      isOpen,
+      closingTime
+    });
+
+    res.status(201).json({
+      succeeded: true,
+      lab
+    });
+  } catch (error) {
+    console.error("Error creating lab:", error);
+    res.status(500).json({
+      succeeded: false,
+      error: "An error occurred while creating the lab"
+    });
+  }
+};
+
+export { createUser, loginUser, logout, getDashboardPage, getComputer, getLabs, createLab };

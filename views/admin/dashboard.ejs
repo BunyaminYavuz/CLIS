@@ -1,0 +1,441 @@
+<%- include('../partials/_header') %>
+<!-- Bootstrap JS ve Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+
+<body class="main-layout inner_posituong">
+  <%- include('../partials/_navbar') %>
+  
+  <div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2><i class="fas fa-tachometer-alt"></i> Yönetici Paneli</h2>
+      <div class="btn-group">
+        <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addUserModal">
+          <i class="fas fa-user-plus"></i> Yeni Kullanıcı
+        </button>
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addComputerModal">
+          <i class="fas fa-desktop"></i> Yeni Bilgisayar
+        </button>
+        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addLabModal">
+          <i class="fas fa-building"></i> Yeni Laboratuvar
+        </button>
+      </div>
+    </div>
+
+    <div class="btn-group mb-3">
+      <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#announcementModal">
+        <i class="fas fa-bullhorn"></i> Create Announcement
+      </button>
+    </div>
+
+    <!-- Özet Kartları -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card bg-primary text-white">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title mb-1">Toplam Kullanıcı</h6>
+                <h3 class="mb-0"><%= userCount %></h3>
+              </div>
+              <i class="fas fa-users fa-2x opacity-50"></i>
+            </div>
+            <div class="mt-3 small">
+              <span class="text-white-50">
+                <i class="fas fa-graduation-cap"></i> <%= studentCount %> Öğrenci
+              </span>
+              <span class="text-white-50 ms-2">
+                <i class="fas fa-user-shield"></i> <%= operatorCount %> Operatör
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <div class="card bg-success text-white">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title mb-1">Aktif Oturumlar</h6>
+                <h3 class="mb-0"><%= activeSessions %></h3>
+              </div>
+              <i class="fas fa-desktop fa-2x opacity-50"></i>
+            </div>
+            <div class="mt-3 small">
+              <span class="text-white-50">
+                <%= totalComputers %> Bilgisayardan <%= activeComputers %> aktif
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card bg-info text-white">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title mb-1">Bugünkü Oturumlar</h6>
+                <h3 class="mb-0"><%= todaySessions %></h3>
+              </div>
+              <i class="fas fa-chart-line fa-2x opacity-50"></i>
+            </div>
+            <div class="mt-3 small">
+              <span class="text-white-50">
+                Toplam <%= formatDuration(todayTotalDuration) %>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card bg-warning text-white">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title mb-1">Laboratuvarlar</h6>
+                <h3 class="mb-0"><%= labCount %></h3>
+              </div>
+              <i class="fas fa-building fa-2x opacity-50"></i>
+            </div>
+            <div class="mt-3 small">
+              <span class="text-white-50">
+                <%= computersByLab.map(lab => lab.name).join(', ') %>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ana İçerik -->
+    <div class="row">
+      <!-- Aktif Oturumlar -->
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-desktop"></i> Aktif Oturumlar
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Öğrenci</th>
+                    <th>Laboratuvar</th>
+                    <th>Bilgisayar</th>
+                    <th>Başlangic</th>
+                    <th>Süre</th>
+                    <th>İşlemler</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% activeSessions.forEach(session => { %>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <img src="/images/avatar.png" class="rounded-circle me-2" width="32">
+                          <div>
+                            <%= session.user.name %> <%= session.user.lastname %>
+                            <div class="small text-muted"><%= session.user.studentId %></div>
+                          </div>
+                        </div>
+                      </td>
+                      <td><%= session.computer?.lab?.name || 'Bilinmiyor' %></td>
+                      <td><%= session.computer.name %></td>
+                      <td><%= formatTime(session.startTime) %></td>
+                      <td id="duration-<%= session._id %>">
+                        <script>
+                          updateDuration('<%= session._id %>', '<%= session.startTime %>');
+                        </script>
+                      </td>
+                      <td>
+                        <button class="btn btn-sm btn-danger" onclick="endSession('<%= session._id %>')">
+                          <i class="fas fa-stop-circle"></i> Sonlandır
+                        </button>
+                      </td>
+                    </tr>
+                  <% }) %>
+                  <% if (activeSessions.length === 0) { %>
+                    <tr>
+                      <td colspan="6" class="text-center text-muted py-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Aktif oturum bulunmuyor
+                      </td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Laboratuvar Durumları -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header bg-info text-white">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-building"></i> Laboratuvar Durumları
+            </h5>
+          </div>
+          <div class="card-body">
+            <% computersByLab.forEach(lab => { %>
+              <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h6 class="mb-0"><%= lab.name %></h6>
+                  <span class="badge bg-<%= lab.activeCount > 0 ? 'success' : 'secondary' %>">
+                    <%= lab.activeCount %>/<%= lab.totalCount %> Aktif
+                  </span>
+                </div>
+                <div class="progress" style="height: 10px;">
+                  <div class="progress-bar bg-success" 
+                       style="width: <%= Math.round((lab.activeCount/lab.totalCount)*100) %>%">
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Yeni Duyuru Oluştur</h5>
+      </div>
+      <div class="card-body">
+        <form id="announcementForm">
+          <div class="mb-3">
+            <label class="form-label">Başlık</label>
+            <input type="text" class="form-control" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">İçerik</label>
+            <textarea class="form-control" name="content" rows="3" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Duyuru Oluştur</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Assuming you have a list of labs -->
+    <div class="row">
+      <% labs.forEach(lab => { %>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><%= lab.name %></h5>
+              <p class="card-text"><%= lab.description %></p>
+              <a href="/admin/labs/<%= lab._id %>" class="btn btn-primary">Detayları Gör</a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Yeni Kullanıcı Modal -->
+  <%- include('../partials/_addUserModal') %>
+  
+  <!-- Yeni Bilgisayar Modal -->
+  <%- include('../partials/_addComputerModal') %>
+
+  <!-- Yeni Laboratuvar Modal -->
+  <%- include('../partials/_addLabModal') %>
+
+  <!-- Announcement Modal -->
+  <div class="modal fade" id="announcementModal" tabindex="-1" aria-labelledby="announcementModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="announcementModalLabel">Create Announcement</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="announcementForm">
+            <div class="mb-3">
+              <label for="announcementTitle" class="form-label">Title</label>
+              <input type="text" class="form-control" id="announcementTitle" name="title" required>
+            </div>
+            <div class="mb-3">
+              <label for="announcementContent" class="form-label">Content</label>
+              <textarea class="form-control" id="announcementContent" name="content" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Announcement</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/_footer') %>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Modal'ları initialize et
+      const userModal = new bootstrap.Modal(document.getElementById('addUserModal'));
+      const computerModal = new bootstrap.Modal(document.getElementById('addComputerModal'));
+
+      // Form submit sonrası modal'ı kapat
+      window.closeModals = function() {
+        userModal.hide();
+        computerModal.hide();
+      }
+
+      // Operatör oluşturma fonksiyonu
+      window.createOperator = async function() {
+        const form = document.getElementById('addUserForm');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+
+        try {
+          const response = await fetch('/admin/create-operator', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+
+          const result = await response.json();
+
+          if (result.succeeded) {
+            closeModals();
+            alert('Operatör başarıyla oluşturuldu');
+            location.reload();
+          } else {
+            alert(Object.values(result.errors).join('\n'));
+          }
+        } catch (error) {
+          console.error('Operatör oluşturma hatası:', error);
+          alert('Operatör oluşturulurken bir hata oluştu');
+        }
+      }
+
+      // Bilgisayar oluşturma fonksiyonu
+      window.createComputer = async function() {
+        const form = document.getElementById('addComputerForm');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+
+        try {
+          const response = await fetch('/admin/computers', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+
+          const result = await response.json();
+
+          if (result.succeeded) {
+            closeModals();
+            alert('Bilgisayar başarıyla eklendi');
+            location.reload();
+          } else {
+            alert('Bilgisayar eklenirken bir hata oluştu');
+          }
+        } catch (error) {
+          console.error('Bilgisayar ekleme hatası:', error);
+          alert('Bilgisayar eklenirken bir hata oluştu');
+        }
+      }
+    });
+
+    function updateDuration(sessionId, startTime) {
+      const start = new Date(startTime);
+      setInterval(() => {
+        const now = new Date();
+        const duration = now - start;
+        const hours = Math.floor(duration / (1000 * 60 * 60));
+        const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((duration % (1000 * 60)) / 1000);
+        
+        document.getElementById(`duration-${sessionId}`).textContent = 
+          `${hours}s ${minutes}dk ${seconds}sn`;
+      }, 1000);
+    }
+
+    async function endSession(sessionId) {
+      if (confirm('Bu oturumu sonlandırmak istediğinize emin misiniz?')) {
+        try {
+          const response = await fetch(`/admin/end-session/${sessionId}`, {
+            method: 'POST'
+          });
+          if (response.ok) {
+            location.reload();
+          } else {
+            const result = await response.json();
+            alert(result.error || 'Oturum sonlandırılırken bir hata oluştu');
+          }
+        } catch (error) {
+          console.error('Oturum sonlandırma hatası:', error);
+          alert('Oturum sonlandırılırken bir hata oluştu');
+        }
+      }
+    }
+
+    document.getElementById('announcementForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData);
+
+      try {
+        const response = await fetch('/admin/create-announcement', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.succeeded) {
+          alert('Announcement created successfully');
+          location.reload(); // Refresh the page to show the new announcement
+        } else {
+          alert(result.error || 'An error occurred while creating the announcement');
+        }
+      } catch (error) {
+        console.error('Error creating announcement:', error);
+        alert('An error occurred while creating the announcement');
+      }
+    });
+  </script>
+
+  <style>
+    .card {
+      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+      border: none;
+      margin-bottom: 1rem;
+    }
+    
+    .card-header {
+      border-bottom: none;
+      padding: 1rem;
+    }
+    
+    .opacity-50 {
+      opacity: 0.5;
+    }
+    
+    .progress {
+      background-color: rgba(0,0,0,0.05);
+    }
+    
+    .table td {
+      vertical-align: middle;
+    }
+    
+    .btn-group .btn {
+      margin-left: 0.5rem;
+    }
+  </style>
+</body> 

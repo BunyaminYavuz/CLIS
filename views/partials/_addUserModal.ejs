@@ -1,0 +1,69 @@
+<!-- Yeni Kullanıcı Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-user-plus"></i> Yeni Operatör Ekle
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addUserForm">
+          <div class="mb-3">
+            <label class="form-label">Ad</label>
+            <input type="text" class="form-control" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Soyad</label>
+            <input type="text" class="form-control" name="lastname" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">E-posta</label>
+            <input type="email" class="form-control" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Şifre</label>
+            <input type="password" class="form-control" name="password" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" onclick="createOperator()">
+          <i class="fas fa-save"></i> Kaydet
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function createOperator() {
+  const form = document.getElementById('addUserForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+
+  try {
+    const response = await fetch('/admin/create-operator', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (result.succeeded) {
+      alert('Operatör başarıyla oluşturuldu');
+      location.reload();
+    } else {
+      alert(Object.values(result.errors).join('\n'));
+    }
+  } catch (error) {
+    console.error('Operatör oluşturma hatası:', error);
+    alert('Operatör oluşturulurken bir hata oluştu');
+  }
+}
+</script> 

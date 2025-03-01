@@ -1,5 +1,5 @@
 import Computer from "../models/computerModel.js";
-import Category from "../models/categoryModel.js";
+import Lab from "../models/labModel.js";
 
 const createComputer = async (req, res) => {
   try {
@@ -53,8 +53,22 @@ const getAllComputers = async (req, res) => {
   }
 };
 
+const getComputersByLab = async (req, res) => {
+  try {
+    const labId = req.params.labId;
+    const computers = await Computer.find({ lab: labId });
 
+    res.status(200).json({
+      succeeded: true,
+      computers
+    });
+  } catch (error) {
+    console.error("Error fetching computers:", error);
+    res.status(500).json({
+      succeeded: false,
+      error: "An error occurred while fetching computers"
+    });
+  }
+};
 
-
-
-export { createComputer, getAllComputers };
+export { createComputer, getAllComputers, getComputersByLab };
