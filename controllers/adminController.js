@@ -456,9 +456,9 @@ const createAnnouncement = async (req, res) => {
 const getAnnouncements = async (req, res) => {
   try {
     const announcements = await Announcement.find().sort({ createdAt: -1 });
-    res.status(200).json({
-      succeeded: true,
-      announcements
+    res.status(200).render('admin/announcements', {
+      announcements,
+      link: 'admin-announcements'
     });
   } catch (error) {
     console.error("Error fetching announcements:", error);
@@ -468,6 +468,72 @@ const getAnnouncements = async (req, res) => {
     });
   }
 };
+
+
+const getAnnouncement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const announcement = await Announcement.findById(id);
+
+    if (!announcement) {
+      return res.status(404).send("Duyuru bulunamadı.");
+    }
+
+    res.render('admin/updateAnnouncement', { announcement, link: 'admin-announcements' });
+  } catch (error) {
+    console.error("Duyuru getirirken hata oluştu:", error);
+    res.status(500).send("Bir hata oluştu.");
+  }
+};
+
+const updateAnnouncement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content } = req.body;
+
+    const updatedAnnouncement = await Announcement.findByIdAndUpdate(
+      id,
+      { title, content },
+    );
+
+    if (!updatedAnnouncement) {
+      return res.status(404).json({ succeeded: false, error: "Duyuru bulunamadı" });
+    }
+
+    res.redirect('/admin/announcements');  // Güncelleme sonrası yönlendirme
+  } catch (error) {
+    console.error("Duyuru güncellenirken hata oluştu:", error);
+    res.status(500).json({
+      succeeded: false,
+      error: "Duyuru güncellenirken bir hata oluştu"
+    });
+  }
+};
+
+
+
+const deleteAnnouncement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Duyuruyu veritabanından bul ve sil
+    const announcement = await Announcement.findByIdAndDelete(id);
+
+    if (!announcement) {
+      return res.status(404).send("Duyuru bulunamadı.");
+    }
+
+    // Silme işlemi başarılı, kullanıcıyı duyurular listesine yönlendir
+    res.redirect('/admin/announcements');
+  } catch (error) {
+    console.error("Duyuru silinirken hata oluştu:", error);
+    res.status(500).send("Bir hata oluştu.");
+  }
+};
+
+
+
+
 
 const getLabDetails = async (req, res) => {
   try {
@@ -518,4 +584,4 @@ const getAddComputerPage = async (req, res) => {
   }
 };
 
-export { getDashboard, getReports, generateReport, createOperator, createComputer, updateComputerStatus, createCategory, createLab, endSession, createAnnouncement, getAnnouncements, getLabDetails, getLabs, getAddComputerPage }; 
+export { getDashboard, getReports, generateReport, createOperator, createComputer, updateComputerStatus, createCategory, createLab, endSession, createAnnouncement, getAnnouncements, getLabDetails, getLabs, getAddComputerPage, updateAnnouncement, getAnnouncement, deleteAnnouncement }; 
