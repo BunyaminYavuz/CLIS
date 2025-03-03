@@ -80,7 +80,7 @@
                     .sort((a, b) => a.lab.name.localeCompare(b.lab.name))
                     .forEach(computer => { 
                   %>
-                    <option value="<%= computer._id %>">
+                    <option value="<%= computer._id %>" <%= !computer.lab.isOpen ? 'disabled' : '' %>>
                       <%= computer.name %> (<%= computer.lab.name %>)
                     </option>
                   <% }) %>
