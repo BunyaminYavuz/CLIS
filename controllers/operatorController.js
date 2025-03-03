@@ -139,4 +139,51 @@ const getComputersByLab = async (req, res) => {
   }
 };
 
-export { getDashboard, assignComputer, endSession, getComputersByLab }; 
+
+const toggleLabStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isOpen } = req.body;
+
+    const updatedLab = await Lab.findByIdAndUpdate(id, { isOpen }, { new: true });
+
+    if (!updatedLab) {
+      return res.status(404).json({ success: false, message: 'Lab bulunamadı' });
+    }
+
+    if (!isOpen) {
+      // Lab kapatılıyorsa, o labdaki tüm bilgisayarların oturumlarını sonlandır
+      const computers = await Computer.find({ lab: id, isUsed: true });
+
+      for (const computer of computers) {
+        const student = await User.findOne({ currentComputer: computer._id });
+
+        if (student) {
+          // Bilgisayarı boşalt
+          computer.isUsed = false;
+          await computer.save();
+
+          // Öğrencinin aktif oturumunu sonlandır
+          const currentSession = student.labUsageHistory.find(
+            session => session.computer.toString() === computer._id.toString() && !session.endTime
+          );
+
+          if (currentSession) {
+            currentSession.endTime = new Date();
+          }
+
+          student.currentComputer = null;
+          await student.save();
+        }
+      }
+    }
+
+    res.json({ success: true, message: 'Lab durumu güncellendi', lab: updatedLab });
+  } catch (error) {
+    console.error('Hata:', error);
+    res.status(500).json({ success: false, message: 'Sunucu hatası' });
+  }
+};
+
+
+export { getDashboard, assignComputer, endSession, getComputersByLab, toggleLabStatus }; 
