@@ -1,0 +1,46 @@
+<%- include('../partials/_header') %>
+<body class="main-layout inner_posituong">
+  <%- include('../partials/_navbar') %>
+
+  <div class="container mt-5">
+    <h2 class="mb-4"><i class="fas fa-bullhorn"></i> Duyurular</h2>
+
+    <% if (announcements.length > 0) { %>
+      <div class="list-group">
+        <% announcements.forEach(announcement => { %>
+          <div class="card mb-3 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">
+                <i class="fas fa-newspaper"></i> <%= announcement.title %>
+              </h5>
+              <div>
+                <a href="/admin/announcements/update/<%= announcement._id %>" class="btn btn-sm btn-warning">
+                  <i class="fas fa-edit"></i> Güncelle
+                </a>
+                <form action="/admin/announcements/delete/<%= announcement._id %>" method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bu duyuruyu silmek istediğinizden emin misiniz?');">
+                    <i class="fas fa-trash-alt"></i> Sil
+                  </button>
+                </form>
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="card-text"><%= announcement.content %></p>
+              <p class="text-muted">
+                <i class="far fa-clock"></i> <%= new Date(announcement.createdAt).toLocaleString('tr-TR') %>
+              </p>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="alert alert-info text-center" role="alert">
+        <i class="fas fa-info-circle"></i> Henüz herhangi bir duyuru bulunmamaktadır.
+      </div>
+    <% } %>
+
+  
+  </div>
+
+  <%- include('../partials/_footer') %>
+</body>

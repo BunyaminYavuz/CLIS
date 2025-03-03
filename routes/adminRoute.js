@@ -26,5 +26,8 @@ router.post("/end-session/:sessionId", adminController.endSession);
 // Announcement routes
 router.post("/create-announcement", adminController.createAnnouncement);
 router.get("/announcements", adminController.getAnnouncements);
+router.get("/announcements/update/:id", adminController.getAnnouncement);
+router.post('/announcements/update/:id', adminController.updateAnnouncement);
+router.post('/announcements/delete/:id', adminController.deleteAnnouncement);
 
 export default router; 
