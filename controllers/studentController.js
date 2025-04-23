@@ -249,6 +249,7 @@ const getLabComputerStatus = async (req, res) => {
 
       selectedLabComputers = {
         labName: lab.name,
+        labStatus: lab.isOpen,
         computers: computers.map(computer => ({
           name: computer.name,
           isUsed: computer.isUsed, // DB'deki gerçek kullanım durumunu al

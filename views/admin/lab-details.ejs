@@ -1,59 +1,59 @@
 <%- include('../partials/_header') %>
 <body class="main-layout inner_posituong">
-  <%- include('../partials/_navbar') %>
+    <%- include('../partials/_navbar') %>
 
-  <div class="container mt-5">
-    <h2 class="mb-4"><%= lab.name %> Detayları</h2>
-    
-    <div class="card mb-4">
-      <div class="card-header">
-        <h5 class="card-title">Laboratuvar Bilgileri</h5>
-      </div>
-      <div class="card-body">
-        <p><strong>Açıklama:</strong> <%= lab.description %></p>
-        <p><strong>Kapasite:</strong> <%= lab.capacity %></p>
-        <p><strong>Durum:</strong> <%= lab.isOpen ? 'Acik mi' : 'Kapalı' %></p>
-        <% if (lab.isOpen) { %>
-          <p><strong>Kapanma Saati:</strong> <%= lab.closingTime || 'Belirtilmemiş' %></p>
-        <% } %>
-      </div>
+    <div class="container mt-5">
+        <h2 class="mb-4"><%= lab.name %> Detayları</h2>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Laboratuvar Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Açıklama:</strong> <%= lab.description %></p>
+                <p><strong>Kapasite:</strong> <%= lab.capacity %></p>
+                <p><strong>Durum:</strong> <%= lab.isOpen ? 'Açık' : 'Kapalı' %></p>
+                <% if (lab.isOpen) { %>
+                    <p><strong>Kapanma Saati:</strong> <%= lab.closingTime || 'Belirtilmemiş' %></p>
+                <% } %>
+            </div>
+        </div>
+
+        <h3 class="mb-3">Bilgisayarlar</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Bilgisayar Adı</th>
+                    <th>Aktiflik Durumu</th>
+                    <th>Laboratuvar Adı</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% computers.forEach(computer => { %>
+                    <tr>
+                        <td>
+                            <i class="fas fa-desktop"></i> <%= computer.name %>
+                        </td>
+                        <td>
+                            <span class="badge <%= lab.isOpen ? (computer.isUsed ? 'bg-danger' : 'bg-success') : 'bg-secondary' %>">
+                                <%= lab.isOpen ? (computer.isUsed ? 'Kullanımda' : 'Boş') : 'Kapalı' %>
+                            </span>
+                        </td>
+                        <td>
+                            <%= lab.name %>
+                        </td>
+                    </tr>
+                <% }) %>
+                <% if (computers.length === 0) { %>
+                    <tr>
+                        <td colspan="3" class="text-center text-muted">
+                            Bu laboratuvarda henüz bilgisayar bulunmuyor.
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
     </div>
 
-    <h3 class="mb-3">Bilgisayarlar</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Bilgisayar Adı</th>
-          <th>Aktiflik Durumu</th>
-          <th>Laboratuvar Adı</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% computers.forEach(computer => { %>
-          <tr>
-            <td>
-              <i class="fas fa-desktop"></i> <%= computer.name %>
-            </td>
-            <td>
-              <span class="badge <%= computer.isUsed ? 'bg-danger' : 'bg-success' %>">
-                <%= computer.isUsed ? 'Kullanımda' : 'Boş' %>
-              </span>
-            </td>
-            <td>
-              <%= computer.lab.name %>
-            </td>
-          </tr>
-        <% }) %>
-        <% if (computers.length === 0) { %>
-          <tr>
-            <td colspan="3" class="text-center text-muted">
-              Bu laboratuvarda henüz bilgisayar bulunmuyor.
-            </td>
-          </tr>
-        <% } %>
-      </tbody>
-    </table>
-  </div>
-
-  <%- include('../partials/_footer') %>
-</body> 
+    <%- include('../partials/_footer') %>
+</body>

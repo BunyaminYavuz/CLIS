@@ -1,7 +1,7 @@
 <%- include('../partials/_header') %>
 <body class="main-layout inner_posituong">
   <%- include('../partials/_navbar') %>
-  
+
   <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center">
       <h2>Laboratuvar Kullanım Geçmişi</h2>
@@ -86,10 +86,10 @@
             </thead>
             <tbody>
               <% history.forEach(session => { %>
-                <tr>
+                <tr class="history-row" data-date="<%= session.startTime %>">
                   <td><%= formatDate(session.startTime) %></td>
                   <td><%= formatTime(session.startTime) %></td>
-                  <td><%= session.endTime ? formatDate(session.endTime) : 'Devam Ediyor' %></td>
+                  <td><%= session.endTime ? formatTime(session.endTime) : 'Devam Ediyor' %></td>
                   <td><%= session.computer?.lab?.name || 'Bilinmiyor' %></td>
                   <td><%= session.computer?.name || 'Bilinmiyor' %></td>
                   <td>
@@ -122,7 +122,7 @@
               <% }) %>
               <% if (history.length === 0) { %>
                 <tr>
-                  <td colspan="5" class="text-center text-muted">
+                  <td colspan="8" class="text-center text-muted">
                     Henüz laboratuvar geçmişi bulunmuyor.
                   </td>
                 </tr>
@@ -137,7 +137,6 @@
   <%- include('../partials/_footer') %>
 
   <script>
-    // Sayfa yüklendiğinde başlangıç değerlerini sakla
     let initialStats = {
       totalDuration: document.getElementById('totalDuration').textContent,
       totalSessions: document.getElementById('totalSessions').textContent,
@@ -145,79 +144,77 @@
     };
 
     function filterHistory(period) {
-      const rows = document.querySelectorAll('.history-row');
-      const now = new Date();
-      const oneWeekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
-      const oneMonthAgo = new Date(now.getFullYear(), now.getMonth(), 1);
+  const rows = document.querySelectorAll('.history-row');
+  const now = new Date();
+  const oneWeekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+  const oneMonthAgo = new Date(now.getFullYear(), now.getMonth(), 1);
 
-      if (period === 'all') {
-        // Tümü seçildiğinde başlangıç değerlerine dön
-        rows.forEach(row => row.style.display = '');
-        document.getElementById('totalDuration').textContent = initialStats.totalDuration;
-        document.getElementById('totalSessions').textContent = initialStats.totalSessions;
-        document.getElementById('avgDuration').textContent = initialStats.avgDuration;
-        return;
+  if (period === 'all') {
+    rows.forEach(row => row.style.display = '');
+    document.getElementById('totalDuration').textContent = initialStats.totalDuration;
+    document.getElementById('totalSessions').textContent = initialStats.totalSessions;
+    document.getElementById('avgDuration').textContent = initialStats.avgDuration;
+    return;
+  }
+
+  let totalDuration = 0;
+  let visibleRows = 0;
+
+  rows.forEach(row => {
+    const date = new Date(row.dataset.date);
+    let show = true;
+
+    if (period === 'thisWeek') {
+      show = date >= oneWeekAgo;
+    } else if (period === 'thisMonth') {
+      show = date >= oneMonthAgo;
+    }
+
+    if (show) {
+      const startTime = new Date(row.dataset.date);
+      const endTimeText = row.querySelector('td:nth-child(3)').textContent.trim();
+      const endTimeCell = row.querySelector('td:nth-child(3)');
+      const isOngoing = endTimeText.includes('Devam Ediyor');
+
+      if (!isOngoing) {
+        const duration = new Date(startTime);
+        const endTime = new Date(startTime);
+        const endTimeParts = endTimeCell.textContent.split(':');
+        endTime.setHours(parseInt(endTimeParts[0]), parseInt(endTimeParts[1]));
+
+        if (endTime < startTime) {
+          endTime.setDate(endTime.getDate() + 1); // Gece 12'yi geçtiyse
+        }
+
+        totalDuration += (endTime - startTime);
       }
 
-      let totalDuration = 0;
-      let visibleRows = 0;
-
-      rows.forEach(row => {
-        const date = new Date(row.dataset.date);
-        let show = true;
-
-        if (period === 'thisWeek') {
-          show = date >= oneWeekAgo;
-        } else if (period === 'thisMonth') {
-          show = date >= oneMonthAgo;
-        }
-
-        row.style.display = show ? '' : 'none';
-
-        if (show) {
-          visibleRows++;
-          const durationCell = row.querySelector('td:nth-child(6)');
-          const durationText = durationCell.textContent.trim();
-          
-          if (!durationText.includes('Devam Ediyor')) {
-            try {
-              const [hours, , minutes] = durationText.split(' '); // "3 saat 45 dakika" formatını parçala
-              const hoursNum = parseInt(hours) || 0;
-              const minutesNum = parseInt(minutes) || 0;
-              totalDuration += (hoursNum * 60 + minutesNum) * 60 * 1000;
-            } catch (error) {
-              console.error('Süre ayrıştırma hatası:', error);
-            }
-          }
-        }
-      });
-
-      // İstatistikleri güncelle
-      const avgDuration = visibleRows > 0 ? totalDuration / visibleRows : 0;
-
-      document.getElementById('totalDuration').textContent = formatDuration(totalDuration);
-      document.getElementById('totalSessions').textContent = visibleRows;
-      document.getElementById('avgDuration').textContent = formatDuration(avgDuration);
+      visibleRows++;
     }
+
+    row.style.display = show ? '' : 'none';
+  });
+
+  const avgDuration = visibleRows > 0 ? totalDuration / visibleRows : 0;
+  document.getElementById('totalDuration').textContent = formatDuration(totalDuration);
+  document.getElementById('totalSessions').textContent = visibleRows;
+  document.getElementById('avgDuration').textContent = formatDuration(avgDuration);
+}
+
 
     function formatDuration(milliseconds) {
       if (!milliseconds) return '0 dakika';
-      
       const hours = Math.floor(milliseconds / (1000 * 60 * 60));
       const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
-      
-      if (hours === 0) {
-        return `${minutes} dakika`;
-      }
+      if (hours === 0) return `${minutes} dakika`;
       return `${hours} saat ${minutes} dakika`;
     }
 
-    // Tarih formatlamak için yardımcı fonksiyon
     function formatDate(date) {
-      const options = { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
+      const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
@@ -226,7 +223,6 @@
     }
   </script>
 
-  <!-- Stil eklemeleri -->
   <style>
     .table th {
       font-weight: 600;
@@ -262,6 +258,7 @@
     }
 
     .bg-gradient {
+      background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4);
       background-size: 200% auto;
       animation: gradient 2s ease infinite;
     }
@@ -284,4 +281,4 @@
       background-color: rgba(0,0,0,.04);
     }
   </style>
-</body> 
+</body>
