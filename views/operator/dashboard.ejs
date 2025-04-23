@@ -1,437 +1,440 @@
 <%- include('../partials/_header') %>
 <body class="main-layout inner_posituong">
-  <%- include('../partials/_navbar') %>
-  
-  <div class="container mt-5">
-    <h2>Operatör Paneli</h2>
-    
-    <!-- İstatistik Kartları -->
-    <div class="row mt-4">
-      <div class="col-md-3">
-        <div class="card bg-primary text-white">
-          <div class="card-body text-center">
-            <i class="fas fa-desktop fa-3x mb-3"></i>
-            <h5 class="card-title">Toplam Bilgisayar</h5>
-            <p class="h4"><%= computers.length %></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card bg-success text-white">
-          <div class="card-body text-center">
-            <i class="fas fa-power-off fa-3x mb-3"></i>
-            <h5 class="card-title">Aktif Bilgisayar</h5>
-            <p class="h4"><%= computers.filter(c => c.status === 'active').length %></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card bg-info text-white">
-          <div class="card-body text-center">
-            <i class="fas fa-users fa-3x mb-3"></i>
-            <h5 class="card-title">Kullanımda</h5>
-            <p class="h4"><%= computers.filter(c => c.isUsed).length %></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card bg-warning text-white">
-          <div class="card-body text-center">
-            <i class="fas fa-tools fa-3x mb-3"></i>
-            <h5 class="card-title">Bakımda</h5>
-            <p class="h4"><%= computers.filter(c => c.status === 'maintenance').length %></p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <%- include('../partials/_navbar') %>
 
-    <!-- Hızlı Bilgisayar Atama -->
-    <div class="card mt-4">
-      <div class="card-header bg-primary text-white">
-        <h5 class="card-title mb-0">
-          <i class="fas fa-plug"></i> 
-          Hızlı Bilgisayar Atama
-        </h5>
-      </div>
-      <div class="card-body">
-        <form id="assignForm">
-          <div class="row">
-            <div class="col-md-5">
-              <div class="form-group">
-                <label><i class="fas fa-user"></i> Öğrenci</label>
-                <select class="form-control" name="studentId" required>
-                  <option value="">Öğrenci Seçin</option>
-                  <% students.forEach(student => { %>
-                    <option value="<%= student._id %>" <%= student.currentComputer ? 'disabled' : '' %>>
-                      <%= student.studentNumber %> - <%= student.name %> <%= student.lastname %>
-                      <%= student.currentComputer ? '(Aktif Kullanımda)' : '' %>
-                    </option>
-                  <% }) %>
-                </select>
-              </div>
-            </div>
-            <div class="col-md-5">
-              <div class="form-group">
-                <label><i class="fas fa-desktop"></i> Bilgisayar</label>
-                <select class="form-select" name="computerId" required>
-                  <option value="">Bilgisayar Seçin</option>
-                  <% computers
-                    .filter(c => !c.isUsed && c.status === 'active')
-                    .sort((a, b) => a.lab.name.localeCompare(b.lab.name))
-                    .forEach(computer => { 
-                  %>
-                    <option value="<%= computer._id %>" <%= !computer.lab.isOpen ? 'disabled' : '' %>>
-                      <%= computer.name %> (<%= computer.lab.name %>)
-                    </option>
-                  <% }) %>
-                </select>
-              </div>
-            </div>
-            <div class="col-md-2">
-              <button type="submit" class="btn btn-primary mt-4 w-100">
-                <i class="fas fa-plus-circle"></i> Ata
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+    <div class="container mt-5">
+        <h2>Operatör Paneli</h2>
 
-    <!-- Laboratuvar Durumu -->
-    <div class="card mt-4">
-      <div class="card-header bg-info text-white">
-        <h5 class="card-title mb-0">
-          <i class="fas fa-th"></i>
-          Laboratuvar Durumu
-        </h5>
-      </div>
-      <div class="card-body">
-        <!-- Tab Başlıkları -->
-        <ul class="nav nav-tabs" id="labTabs" role="tablist">
-          <% labs.forEach((lab, index) => { %>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link d-flex align-items-center justify-content-between <%= index === 0 ? 'active' : '' %>"
-                      id="lab<%= index %>-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#lab<%= index %>"
-                      type="button"
-                      role="tab"
-                      aria-controls="lab<%= index %>"
-                      aria-selected="<%= index === 0 ? 'true' : 'false' %>">
-                <span><%= lab.name %></span>
-                <label class="switch ms-2">
-                  <input id="lab-toggle-<%= lab._id %>" type="checkbox" <%= lab.isOpen ? 'checked' : '' %> 
-                         onchange="confirmToggleLabStatus('<%= lab._id %>', this)">
-                  <span class="slider round"></span>
-                </label>
-              </button>
-            </li>
-          <% }); %>
-        </ul>
-        
-        <style>
-          /* Toggle Switch */
-          .switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 20px;
-          }
-        
-          .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-          }
-        
-          .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: red;
-            transition: 0.4s;
-            border-radius: 20px;
-          }
-        
-          .slider:before {
-            position: absolute;
-            content: "";
-            height: 14px;
-            width: 14px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-          }
-        
-          input:checked + .slider {
-            background-color: green;
-          }
-        
-          input:checked + .slider:before {
-            transform: translateX(20px);
-          }
-        
-          .nav-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            min-width: 150px;
-            padding-right: 10px;
-          }
-        </style>
-        
-        <script>
-          function confirmToggleLabStatus(labId, checkbox) {
-            const newStatus = checkbox.checked;
-            const confirmation = confirm(`Lab durumunu ${newStatus ? 'açmak' : 'kapatmak'} istediğinize emin misiniz?`);
-        
-            if (confirmation) {
-              toggleLabStatus(labId, checkbox);
-            } else {
-              checkbox.checked = !newStatus;
-            }
-          }
-        
-          function toggleLabStatus(labId, checkbox) {
-            const newStatus = checkbox.checked;
-        
-            fetch(`/operator/toggleLabStatus/${labId}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ isOpen: newStatus })
-            })
-            .then(response => response.json())
-            .then(data => {
-              if (!data.success) {
-                alert('Durum güncellenemedi');
-                checkbox.checked = !checkbox.checked;
-              } else {
-                console.log("Lab durumu güncellendi: ", data);
-              }
-            })
-            .catch(error => {
-              console.error('Hata:', error);
-              checkbox.checked = !checkbox.checked;
-            });
-          }
-        </script>
-
-        <!-- Tab İçerikleri -->
-        <div class="tab-content mt-3" id="labTabsContent">
-          <% labs.forEach((lab, index) => { 
-            const labComputers = computers.filter(c => c.lab && c.lab.name === lab.name);
-          %>
-            <div class="tab-pane fade <%= index === 0 ? 'show active' : '' %>"
-                 id="lab<%= index %>"
-                 role="tabpanel"
-                 aria-labelledby="lab<%= index %>-tab">
-              <div class="row">
-                <% labComputers.forEach(computer => { %>
-                  <div class="col-md-3 mb-3">
-                    <div class="card <%= computer.isUsed ? 'border-danger' : computer.status !== 'active' ? 'border-warning' : 'border-success' %>">
-                      <div class="card-body">
-                        <h5 class="card-title">
-                          <i class="fas fa-desktop"></i>
-                          <%= computer.name %>
-                        </h5>
-                        <p class="card-text">
-                          <% if (computer.isUsed) { 
-                            const student = students.find(s => s.currentComputer && s.currentComputer.toString() === computer._id.toString());
-                            if (student) {
-                          %>
-                            <small class="text-danger">
-                              <i class="fas fa-user"></i>
-                              <%= student.name %> <%= student.lastname %>
-                            </small>
-                            <button class="btn btn-danger btn-sm float-end"
-                                    onclick="endSession('<%= computer._id %>', '<%= student._id %>')">
-                              <i class="fas fa-stop-circle"></i>
-                            </button>
-                          <% }} else if (computer.status !== 'active') { %>
-                            <span class="badge bg-warning">
-                              <i class="fas fa-tools"></i>
-                              <%= computer.status %>
-                            </span>
-                          <% } else { %>
-                            <span class="badge bg-success">
-                              <i class="fas fa-check-circle"></i>
-                              Müsait
-                            </span>
-                          <% } %>
-                        </p>
-                      </div>
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-desktop fa-3x mb-3"></i>
+                        <h5 class="card-title">Toplam Bilgisayar</h5>
+                        <p class="h4"><%= computers.length %></p>
                     </div>
-                  </div>
-                <% }); %>
-              </div>
+                </div>
             </div>
-          <% }); %>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-power-off fa-3x mb-3"></i>
+                        <h5 class="card-title">Aktif Bilgisayar</h5>
+                        <p class="h4"><%= computers.filter(c => c.status === 'active').length %></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <h5 class="card-title">Kullanımda</h5>
+                        <p class="h4"><%= computers.filter(c => c.isUsed).length %></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-tools fa-3x mb-3"></i>
+                        <h5 class="card-title">Bakımda</h5>
+                        <p class="h4"><%= computers.filter(c => c.status === 'maintenance').length %></p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-plug"></i>
+                    Hızlı Bilgisayar Atama
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="assignForm">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> Öğrenci</label>
+                                <select class="form-control" name="studentId" required>
+                                    <option value="">Öğrenci Seçin</option>
+                                    <% students.forEach(student => { %>
+                                        <option value="<%= student._id %>" <%= student.currentComputer ? 'disabled' : '' %>>
+                                            <%= student.studentNumber %> - <%= student.name %> <%= student.lastname %>
+                                            <%= student.currentComputer ? '(Aktif Kullanımda)' : '' %>
+                                        </option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label><i class="fas fa-desktop"></i> Bilgisayar</label>
+                                <select class="form-select" name="computerId" required>
+                                    <option value="">Bilgisayar Seçin</option>
+                                    <% computers
+                                        .filter(c => !c.isUsed && c.status === 'active')
+                                        .sort((a, b) => a.lab.name.localeCompare(b.lab.name))
+                                        .forEach(computer => {
+                                    %>
+                                        <option value="<%= computer._id %>" <%= !computer.lab.isOpen ? 'disabled' : '' %>>
+                                            <%= computer.name %> (<%= computer.lab.name %>)
+                                        </option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary mt-4 w-100">
+                                <i class="fas fa-plus-circle"></i> Ata
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-th"></i>
+                    Laboratuvar Durumu
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="labTabs" role="tablist">
+                    <% labs.forEach((lab, index) => { %>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center justify-content-between <%= index === 0 ? 'active' : '' %>"
+                                    id="lab<%= index %>-tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#lab<%= index %>"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="lab<%= index %>"
+                                    aria-selected="<%= index === 0 ? 'true' : 'false' %>">
+                                <span><%= lab.name %></span>
+                                <label class="switch ms-2">
+                                    <input id="lab-toggle-<%= lab._id %>" type="checkbox" <%= lab.isOpen ? 'checked' : '' %>
+                                           onchange="confirmToggleLabStatus('<%= lab._id %>', this)">
+                                    <span class="slider round"></span>
+                                </label>
+                            </button>
+                        </li>
+                    <% }); %>
+                </ul>
+
+                <style>
+                    /* Toggle Switch */
+                    .switch {
+                        position: relative;
+                        display: inline-block;
+                        width: 40px;
+                        height: 20px;
+                    }
+
+                    .switch input {
+                        opacity: 0;
+                        width: 0;
+                        height: 0;
+                    }
+
+                    .slider {
+                        position: absolute;
+                        cursor: pointer;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background-color: red;
+                        transition: 0.4s;
+                        border-radius: 20px;
+                    }
+
+                    .slider:before {
+                        position: absolute;
+                        content: "";
+                        height: 14px;
+                        width: 14px;
+                        left: 3px;
+                        bottom: 3px;
+                        background-color: white;
+                        transition: 0.4s;
+                        border-radius: 50%;
+                    }
+
+                    input:checked + .slider {
+                        background-color: green;
+                    }
+
+                    input:checked + .slider:before {
+                        transform: translateX(20px);
+                    }
+
+                    .nav-link {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        min-width: 150px;
+                        padding-right: 10px;
+                    }
+                </style>
+
+                <script>
+                    function confirmToggleLabStatus(labId, checkbox) {
+                        const newStatus = checkbox.checked;
+                        const confirmation = confirm(`Lab durumunu ${newStatus ? 'açmak' : 'kapatmak'} istediğinize emin misiniz?`);
+
+                        if (confirmation) {
+                            toggleLabStatus(labId, checkbox);
+                        } else {
+                            checkbox.checked = !newStatus;
+                        }
+                    }
+
+                    function toggleLabStatus(labId, checkbox) {
+                        const newStatus = checkbox.checked;
+
+                        fetch(`/operator/toggleLabStatus/${labId}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ isOpen: newStatus })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.success) {
+                                alert('Durum güncellenemedi');
+                                checkbox.checked = !checkbox.checked;
+                            } else {
+                                console.log("Lab durumu güncellendi: ", data);
+                                // Sayfayı yenilemek yerine, sadece ilgili lab bölümünü güncelleyebilirsiniz.
+                                // Ancak şimdilik basitlik adına tam sayfa yenileme yapalım.
+                                location.reload();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Hata:', error);
+                            checkbox.checked = !checkbox.checked;
+                        });
+                    }
+                </script>
+
+                <div class="tab-content mt-3" id="labTabsContent">
+                    <% labs.forEach((lab, index) => {
+                        const labComputers = computers.filter(c => c.lab && c.lab.name === lab.name);
+                    %>
+                        <div class="tab-pane fade <%= index === 0 ? 'show active' : '' %>"
+                             id="lab<%= index %>"
+                             role="tabpanel"
+                             aria-labelledby="lab<%= index %>-tab">
+                            <div class="row">
+                                <% labComputers.forEach(computer => { %>
+                                    <div class="col-md-3 mb-3">
+                                        <div class="card <%= lab.isOpen ? (computer.isUsed ? 'border-danger' : computer.status !== 'active' ? 'border-warning' : 'border-success') : 'border-secondary' %>">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <i class="fas fa-desktop"></i>
+                                                    <%= computer.name %>
+                                                </h5>
+                                                <p class="card-text">
+                                                    <% if (lab.isOpen) { %>
+                                                        <% if (computer.isUsed) {
+                                                            const student = students.find(s => s.currentComputer && s.currentComputer.toString() === computer._id.toString());
+                                                            if (student) {
+                                                        %>
+                                                            <small class="text-danger">
+                                                                <i class="fas fa-user"></i>
+                                                                <%= student.name %> <%= student.lastname %>
+                                                            </small>
+                                                            <button class="btn btn-danger btn-sm float-end"
+                                                                    onclick="endSession('<%= computer._id %>', '<%= student._id %>')">
+                                                                <i class="fas fa-stop-circle"></i>
+                                                            </button>
+                                                        <% }} else if (computer.status !== 'active') { %>
+                                                            <span class="badge bg-warning">
+                                                                <i class="fas fa-tools"></i>
+                                                                <%= computer.status %>
+                                                            </span>
+                                                        <% } else { %>
+                                                            <span class="badge bg-success">
+                                                                <i class="fas fa-check-circle"></i>
+                                                                Müsait
+                                                            </span>
+                                                        <% } %>
+                                                    <% } else { %>
+                                                        <span class="badge bg-secondary">
+                                                            <i class="fas fa-lock"></i>
+                                                            Kapalı
+                                                        </span>
+                                                    <% } %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-users"></i>
+                    Aktif Kullanımlar
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-desktop"></i> Bilgisayar</th>
+                                <th><i class="fas fa-user"></i> Öğrenci</th>
+                                <th><i class="fas fa-clock"></i> Başlangıç</th>
+                                <th><i class="fas fa-hourglass-half"></i> Süre</th>
+                                <th><i class="fas fa-cog"></i> İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% computers.filter(c => c.isUsed).forEach(computer => {
+                                const student = students.find(s => s.currentComputer && s.currentComputer.toString() === computer._id.toString());
+                                if (student) {
+                                    const session = student.labUsageHistory.find(h =>
+                                        h.computer.toString() === computer._id.toString() && !h.endTime
+                                    );
+                            %>
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-desktop text-primary"></i>
+                                        <%= computer.name %>
+                                        <small class="text-muted">(<%= computer.lab.name %>)</small>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-user text-info"></i>
+                                        <%= student.name %> <%= student.lastname %>
+                                        <small class="text-muted">(<%= student.studentNumber %>)</small>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-calendar-alt text-success"></i>
+                                        <%= session ? new Date(session.startTime).toLocaleString() : '-' %>
+                                    </td>
+                                    <td>
+                                        <span class="duration"
+                                              data-start="<%= session ? session.startTime : '' %>">
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm"
+                                                onclick="endSession('<%= computer._id %>', '<%= student._id %>')">
+                                            <i class="fas fa-stop-circle"></i> Sonlandır
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }}); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Aktif Kullanımlar -->
-    <div class="card mt-4">
-      <div class="card-header bg-danger text-white">
-        <h5 class="card-title mb-0">
-          <i class="fas fa-users"></i>
-          Aktif Kullanımlar
-        </h5>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th><i class="fas fa-desktop"></i> Bilgisayar</th>
-                <th><i class="fas fa-user"></i> Öğrenci</th>
-                <th><i class="fas fa-clock"></i> Başlangıç</th>
-                <th><i class="fas fa-hourglass-half"></i> Süre</th>
-                <th><i class="fas fa-cog"></i> İşlem</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% computers.filter(c => c.isUsed).forEach(computer => { 
-                const student = students.find(s => s.currentComputer && s.currentComputer.toString() === computer._id.toString());
-                if (student) {
-                  const session = student.labUsageHistory.find(h => 
-                    h.computer.toString() === computer._id.toString() && !h.endTime
-                  );
-              %>
-                <tr>
-                  <td>
-                    <i class="fas fa-desktop text-primary"></i>
-                    <%= computer.name %>
-                    <small class="text-muted">(<%= computer.lab.name %>)</small>
-                  </td>
-                  <td>
-                    <i class="fas fa-user text-info"></i>
-                    <%= student.name %> <%= student.lastname %>
-                    <small class="text-muted">(<%= student.studentNumber %>)</small>
-                  </td>
-                  <td>
-                    <i class="fas fa-calendar-alt text-success"></i>
-                    <%= session ? new Date(session.startTime).toLocaleString() : '-' %>
-                  </td>
-                  <td>
-                    <span class="duration" 
-                          data-start="<%= session ? session.startTime : '' %>">
-                    </span>
-                  </td>
-                  <td>
-                    <button class="btn btn-danger btn-sm"
-                            onclick="endSession('<%= computer._id %>', '<%= student._id %>')">
-                      <i class="fas fa-stop-circle"></i> Sonlandır
-                    </button>
-                  </td>
-                </tr>
-              <% }}); %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+    <%- include('../partials/_footer') %>
 
-  <%- include('../partials/_footer') %>
-  
-  <!-- Bootstrap JS ve Tab işlevselliği için -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
-    // Tab'ları etkinleştir
-    const triggerTabList = [].slice.call(document.querySelectorAll('.nav-tabs a'));
-    triggerTabList.forEach(function (triggerEl) {
-      const tabTrigger = new bootstrap.Tab(triggerEl);
-      triggerEl.addEventListener('click', function (event) {
-        event.preventDefault();
-        tabTrigger.show();
-      });
-    });
-
-    // Bilgisayar atama
-    document.getElementById('assignForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      
-      try {
-        const res = await fetch('/operator/assign-computer', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            computerId: formData.get('computerId'),
-            studentId: formData.get('studentId')
-          })
+    <script>
+        // Tab'ları etkinleştir
+        const triggerTabList = [].slice.call(document.querySelectorAll('.nav-tabs a'));
+        triggerTabList.forEach(function (triggerEl) {
+            const tabTrigger = new bootstrap.Tab(triggerEl);
+            triggerEl.addEventListener('click', function (event) {
+                event.preventDefault();
+                tabTrigger.show();
+            });
         });
 
-        const data = await res.json();
-        
-        if (data.succeeded) {
-          alert('Bilgisayar başarıyla atandı');
-          location.reload();
-        } else {
-          alert('Hata: ' + data.error);
-        }
-      } catch (error) {
-        console.error('Hata:', error);
-        alert('Bir hata oluştu');
-      }
-    });
+        // Bilgisayar atama
+        document.getElementById('assignForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
 
-    // Oturum sonlandırma
-    async function endSession(computerId, studentId) {
-      if (!confirm('Oturumu sonlandırmak istediğinize emin misiniz?')) return;
+            try {
+                const res = await fetch('/operator/assign-computer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        computerId: formData.get('computerId'),
+                        studentId: formData.get('studentId')
+                    })
+                });
 
-      try {
-        const res = await fetch('/operator/end-session', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ computerId, studentId })
+                const data = await res.json();
+
+                if (data.succeeded) {
+                    alert('Bilgisayar başarıyla atandı');
+                    location.reload();
+                } else {
+                    alert('Hata: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Hata:', error);
+                alert('Bir hata oluştu');
+            }
         });
 
-        const data = await res.json();
-        
-        if (data.succeeded) {
-          alert('Oturum başarıyla sonlandırıldı');
-          location.reload();
-        } else {
-          alert('Hata: ' + data.error);
-        }
-      } catch (error) {
-        console.error('Hata:', error);
-        alert('Bir hata oluştu');
-      }
-    }
+        // Oturum sonlandırma
+        async function endSession(computerId, studentId) {
+            if (!confirm('Oturumu sonlandırmak istediğinize emin misiniz?')) return;
 
-    // Süre güncelleme
-    function updateDurations() {
-      document.querySelectorAll('.duration').forEach(el => {
-        const startTime = new Date(el.dataset.start);
-        if (startTime) {
-          const duration = new Date() - startTime;
-          const hours = Math.floor(duration / (1000 * 60 * 60));
-          const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((duration % (1000 * 60)) / 1000);
-          
-          el.innerHTML = `
-            <i class="fas fa-clock text-warning"></i>
-            ${hours}s ${minutes}dk ${seconds}sn
-          `;
-        }
-      });
-    }
+            try {
+                const res = await fetch('/operator/end-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ computerId, studentId })
+                });
 
-    // Süreleri her saniye güncelle
-    setInterval(updateDurations, 1000);
-    updateDurations();
-  </script>
-</body> 
+                const data = await res.json();
+
+                if (data.succeeded) {
+                    alert('Oturum başarıyla sonlandırıldı');
+                    location.reload();
+                } else {
+                  alert('Hata: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Hata:', error);
+                alert('Bir hata oluştu');
+            }
+        }
+
+        // Süre güncelleme
+        function updateDurations() {
+            document.querySelectorAll('.duration').forEach(el => {
+                const startTime = new Date(el.dataset.start);
+                if (startTime) {
+                    const duration = new Date() - startTime;
+                    const hours = Math.floor(duration / (1000 * 60 * 60));
+                    const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((duration % (1000 * 60)) / 1000);
+
+                    el.innerHTML = `
+                        <i class="fas fa-clock text-warning"></i>
+                        ${hours}s ${minutes}dk ${seconds}sn
+                    `;
+                }
+            });
+        }
+
+        // Süreleri her saniye güncelle
+        setInterval(updateDurations, 1000);
+        updateDurations();
+    </script>
+</body>
