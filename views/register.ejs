@@ -1,78 +1,84 @@
-<%- include('partials/_header') %>
+<%- include('partials/_header') %>
 
-   <!-- body -->
-   <body class="main-layout inner_posituong contact_page">
-      <!-- loader  -->
-      <div class="loader_bg">
-         <div class="loader"><img src="images/loading.gif" alt="#" /></div>
-      </div>
-      <!-- end loader -->
-      <!-- header -->
-      <%- include('partials/_navbar') %>
+<!-- body -->
+<body class="main-layout inner_posituong contact_page">
+   <!-- loader  -->
+   <div class="loader_bg">
+      <div class="loader"><img src="images/loading.gif" alt="#" /></div>
+   </div>
+   <!-- end loader -->
+   <!-- header -->
+   <%- include('partials/_navbar') %>
 
-      <!-- end header inner -->
-      <!-- end header -->
-      <!--  contact -->
-      <div class="contact">
-         <div class="container">
-            <div class="row">
-               <div class="col-md-12">
-                  <div class="titlepage">
-                     <h2>Contact Now</h2>
-                  </div>
-               </div>
-            </div>
-            <div class="row">
-               <div class="col-md-10 offset-md-1">
-                  <form id="request" class="main_form" method="POST" action="/users/signup" novalidate>
-                     <div class="row">
-                        <div class="col-md-12">
-                           <div style="display: none;" class="alert alert-danger" id="name"></div>
-                        </div>
-
-                        <div class="col-md-12 ">
-                           <input class="contactus" placeholder="First Name" type="text" name="name"> 
-                        </div>
-
-
-                        <div class="col-md-12">
-                           <div style="display: none;" class="alert alert-danger" id="lastname"></div>
-                        </div>
-
-                        <div class="col-md-12 ">
-                           <input class="contactus" placeholder="Last Name" type="text" name="lastname"> 
-                        </div>
-
-
-                        <div class="col-md-12">
-                           <div style="display: none;" class="alert alert-danger" id="email"></div>
-                        </div>
-
-                        <div class="col-md-12">
-                           <input class="contactus" placeholder="Email" type="email" name="email"> 
-                        </div>
-
-
-                        <div class="col-md-12">
-                         <div style="display: none;" class="alert alert-danger" id="password"></div>
-                      </div>
-
-                        <div class="col-md-12">
-                           <input class="contactus" placeholder="Password" type="password" name="password"> 
-                       </div>
-                       
-                        
-                        <div class="col-md-12">
-                           <button class="send_btn">Send</button>
-                        </div>
-                     </div>
-                  </form>
+   <!-- end header inner -->
+   <!-- end header -->
+   <!-- contact -->
+   <div class="contact">
+      <div class="container">
+         <div class="row">
+            <div class="col-md-12">
+               <div class="titlepage">
+                  <h2>Contact Now</h2>
                </div>
             </div>
          </div>
+         <div class="row">
+            <div class="col-md-10 offset-md-1">
+               <form id="request" class="main_form" method="POST" action="/users/signup" novalidate>
+                  <div class="row">
+                     <div class="col-md-12">
+                        <div style="display: none;" class="alert alert-danger" id="name"></div>
+                     </div>
+                     <div class="col-md-12 ">
+                        <input class="contactus" placeholder="First Name" type="text" name="name"> 
+                     </div>
+
+                     <div class="col-md-12">
+                        <div style="display: none;" class="alert alert-danger" id="lastname"></div>
+                     </div>
+                     <div class="col-md-12 ">
+                        <input class="contactus" placeholder="Last Name" type="text" name="lastname"> 
+                     </div>
+
+                     <div class="col-md-12">
+                        <div style="display: none;" class="alert alert-danger" id="email"></div>
+                     </div>
+                     <div class="col-md-12">
+                        <input class="contactus" placeholder="Email" type="email" name="email"> 
+                     </div>
+
+                     <div class="col-md-12">
+                        <div style="display: none;" class="alert alert-danger" id="password"></div>
+                     </div>
+                     <div class="col-md-12">
+                        <input class="contactus" placeholder="Password" type="password" name="password"> 
+                     </div>
+                     
+                     <div class="col-md-12">
+                        <div style="display: none;" class="alert alert-danger" id="studentNumber"></div>
+                     </div>
+                     <div class="col-md-12">
+                        <input class="contactus" placeholder="Student Number" type="text" name="studentNumber"> 
+                     </div>
+                     
+                     <div class="col-md-12">
+                        <div style="display: none;" class="alert alert-danger" id="rfid_id"></div>
+                     </div>
+                     <div class="col-md-12">
+                        <input class="contactus" placeholder="RFID ID" type="text" name="rfid_id"> 
+                     </div>
+
+                     <div class="col-md-12">
+                        <button class="send_btn">Send</button>
+                     </div>
+                  </div>
+               </form>
+            </div>
+         </div>
       </div>
-      <!-- end contact -->
-      <!--  footer -->
+   </div>
+   <!-- end contact -->
+   <!-- footer -->
 
 <script>
    const form = document.querySelector('form')
@@ -80,6 +86,8 @@
    const passwordError = document.querySelector('#password')
    const nameError = document.querySelector('#name')
    const lastnameError = document.querySelector('#lastname')
+   const studentNumberError = document.querySelector('#studentNumber')
+   const rfidIdError = document.querySelector('#rfid_id')
 
    form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -88,27 +96,32 @@
       passwordError.textContent = "";
       nameError.textContent = "";
       lastnameError.textContent = "";
+      studentNumberError.textContent = "";
+      rfidIdError.textContent = "";
       emailError.style.display = "none"
       passwordError.style.display = "none"
       nameError.style.display = "none"
       lastnameError.style.display = "none"
+      studentNumberError.style.display = "none"
+      rfidIdError.style.display = "none"
 
       const email = form.email.value
       const password = form.password.value
       const name = form.name.value
       const lastname = form.lastname.value
+      const studentNumber = form.studentNumber.value
+      const rfid_id = form.rfid_id.value
 
       try {
          const res = await fetch('/users/signup', {
             method: "POST",
-            body: JSON.stringify({ email, password, name, lastname }),
+            body: JSON.stringify({ email, password, name, lastname, studentNumber, rfid_id }),
             headers: { "Content-Type": "application/json" }
          })
 
          const data = await res.json();
 
          console.log("Data", data);
-         
 
          if (data) {
 
@@ -132,6 +145,15 @@
                lastnameError.style.display = "block"
             }
 
+            if (data.studentNumber) {
+               studentNumberError.textContent = data.studentNumber
+               studentNumberError.style.display = "block"
+            }
+
+            if (data.rfid_id) {
+               rfidIdError.textContent = data.rfid_id
+               rfidIdError.style.display = "block"
+            }
 
          }
 
@@ -144,6 +166,4 @@
       }
    })
 </script>
-      <%- include('partials/_footer') %>
-
-
+   <%- include('partials/_footer') %>

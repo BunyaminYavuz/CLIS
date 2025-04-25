@@ -39,6 +39,9 @@
                                  <li class="nav-item <%= link === 'operator-dashboard' ? 'active' : '' %>">
                                     <a class="nav-link" href="/operator/dashboard">Bilgisayar Yönetimi</a>
                                   </li>
+                                  <li class="nav-item <%= link === 'operator-scannedStudent' ? 'active' : '' %>">
+                                    <a class="nav-link" href="/operator/scannedStudent">Öğrenci İşlemleri</a>
+                                  </li>
                                <% } else if (user.role === 'student') { %>
                                  <li class="nav-item <%= link === 'student-dashboard' ? 'active' : '' %>">
                                     <a class="nav-link" href="/student/dashboard">Ana Sayfa</a>

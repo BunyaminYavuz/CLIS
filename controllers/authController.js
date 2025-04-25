@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import Computer from "../models/computerModel.js"
+import ScannedStudent from "../models/scannedStudent.js"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 import Lab from "../models/labModel.js";
@@ -249,4 +250,50 @@ const createLab = async (req, res) => {
   }
 };
 
-export { createUser, loginUser, logout, getDashboardPage, getComputer, getLabs, createLab };
+const handleRFID = async (req, res) => {
+  try {
+    const { rfid_id } = req.body;
+
+    // RFID ile eşleşen öğrenci bulun
+    const student = await User.findOne({ rfid_id });
+
+    if (!student) {
+      return res.status(404).json({
+        rfid_succeeded: false,
+        message: "Öğrenci bulunamadı"
+      });
+    }
+
+    // Öğrencinin daha önce kaydedilip kaydedilmediğini kontrol et
+    const existingRecord = await ScannedStudent.findOne({ studentNumber: student.studentNumber });
+
+    if (existingRecord) {
+      // Eğer öğrenci daha önce kaydedildiyse
+      return res.status(400).json({
+        rfid_succeeded: false,
+        message: "Bu öğrenci daha önce kartını okuttu."
+      });
+    }
+
+    // Yeni instance oluştur ve veritabanına kaydet
+    const scannedStudent = new ScannedStudent({
+      studentNumber: student.studentNumber,
+      name: student.name,
+      lastname: student.lastname
+    });
+
+    await scannedStudent.save();
+
+    res.redirect('/operator/scannedStudent'); // Listeleme sayfasına yönlendirme
+  } catch (error) {
+    console.error("RFID işleme hatası:", error);
+    res.status(500).json({
+      rfid_succeeded: false,
+      error: "Bir hata oluştu"
+    });
+  }
+};
+
+
+
+export { createUser, loginUser, logout, getDashboardPage, getComputer, getLabs, createLab, handleRFID};
