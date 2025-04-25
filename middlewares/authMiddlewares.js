@@ -95,4 +95,31 @@ const authenticateRoles = (...roles) => {
     };
 };
 
-export {authenticateToken,checkUser, authenticateRoles}
+
+// authMiddleware.js içinde tanımlı middleware fonksiyonu
+const authenticateRfid = () => {
+    return async (req, res, next) => {
+        try {
+            const checksum = req.body.rfid_checksum;
+            console.log("Received RFID checksum:", checksum);
+            console.log("process.env.RFID_CHECKSUM:", process.env.RFID_CHECKSUM);
+
+            if (process.env.RFID_CHECKSUM == checksum) {
+                // Doğru RFID checksum eşleştiğinde bir sonraki middleware'e geç
+                next();
+            } else {
+                // Geçersiz RFID durumu
+                console.log("RFID checksum doğrulanamadı.");
+                return res.status(401).send("Unauthorized Access: Invalid RFID");
+            }
+
+        } catch (error) {
+            console.error("RFID authentication error:", error);
+            return res.status(500).send("Server Error");
+        }
+    };
+};
+
+
+
+export {authenticateToken,checkUser, authenticateRoles, authenticateRfid}

@@ -11,6 +11,11 @@ const userSchema = new Schema(
       unique: true,
       sparse: true, // Sadece öğrenciler için gerekli
     },
+    rfid_id: {
+      type: String,
+      unique: true,  // RFID kimliği benzersiz olmalı
+      required: [true, "RFID ID field is required!"],
+    },
     name: {
       type: String,
       required: [true, "The name field is required!"],

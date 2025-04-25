@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import Computer from "../models/computerModel.js";
+import ScannedStudent from "../models/scannedStudent.js";
 import Lab from "../models/labModel.js";
 
 const getDashboard = async (req, res) => {
@@ -23,6 +24,28 @@ const getDashboard = async (req, res) => {
     res.status(500).json({
       succeeded: false,
       error: "Bir hata oluştu"
+    });
+  }
+};
+
+
+const scannedStudent = async (req, res) => {
+  try {
+    const students = await ScannedStudent.find().sort({ createdAt: -1 }); 
+
+    res.render("operator/scannedStudent", {
+      rfid_succeeded: students.length > 0,
+      students,
+      user: req.user,
+      link: "operator-scannedStudent"
+    });
+  } catch (error) {
+    console.error("RFID student error:", error);
+    res.status(500).render("operator/scannedStudent", {
+      rfid_succeeded: false,
+      students: [],
+      user: req.user,
+      link: "rfid-student"
     });
   }
 };
@@ -186,4 +209,4 @@ const toggleLabStatus = async (req, res) => {
 };
 
 
-export { getDashboard, assignComputer, endSession, getComputersByLab, toggleLabStatus }; 
+export { getDashboard, assignComputer, endSession, getComputersByLab, toggleLabStatus, scannedStudent }; 
