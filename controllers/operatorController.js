@@ -29,6 +29,29 @@ const getDashboard = async (req, res) => {
 };
 
 
+const getLabStatus = async (req, res) => {
+  try {
+    const [computers, labs, students] = await Promise.all([
+      Computer.find().populate('lab'),
+      Lab.find(),
+      User.find({ role: 'student' })
+    ]);
+
+    res.render('operator/labStatus', {
+      link: 'operator-labStatus',
+      labs,
+      computers,
+      students
+    });
+  } catch (error) {
+    console.error("Operator lab durumu hatası:", error);
+    res.status(500).json({
+      succeeded: false,
+      error: "Laboratuvar durumu getirilirken bir hata oluştu"
+    });
+  }
+};
+
 const scannedStudent = async (req, res) => {
   try {
     const students = await ScannedStudent.find().sort({ createdAt: -1 }); 
@@ -209,4 +232,4 @@ const toggleLabStatus = async (req, res) => {
 };
 
 
-export { getDashboard, assignComputer, endSession, getComputersByLab, toggleLabStatus, scannedStudent }; 
+export { getDashboard, assignComputer, endSession, getComputersByLab, toggleLabStatus, scannedStudent, getLabStatus }; 
