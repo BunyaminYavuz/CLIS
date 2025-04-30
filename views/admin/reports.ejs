@@ -25,32 +25,6 @@
             </div>
         </div>
 
-        <!-- Raporlar Listesi -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Raporlar</h5>
-            </div>
-            <div class="card-body">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Öğrenci Numarası</th>
-                            <th>Toplam Kullanım Süresi (saat)</th>
-                            <th>Oturum Sayısı</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% labUsage.forEach(report => { %>
-                            <tr>
-                                <td><%= report._id %></td>
-                                <td><%= (report.totalUsage / 3600000).toFixed(2) %></td>
-                                <td><%= report.usageCount %></td>
-                            </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 
     <%- include('../partials/_footer') %>
