@@ -5,6 +5,13 @@
   <div class="container mt-5">
     <h2 class="mb-4"><i class="fas fa-bullhorn"></i> Duyurular</h2>
 
+    <!-- ✅ Modal Butonu -->
+    <div class="btn-group mb-3">
+      <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#announcementModal">
+        <i class="fas fa-bullhorn"></i> Duyuru Oluştur
+      </button>
+    </div>
+
     <% if (announcements.length > 0) { %>
       <div class="list-group">
         <% announcements.forEach(announcement => { %>
@@ -38,8 +45,36 @@
         <i class="fas fa-info-circle"></i> Henüz herhangi bir duyuru bulunmamaktadır.
       </div>
     <% } %>
+  </div>
 
-  
+  <!-- ✅ Modal HTML -->
+  <div class="modal fade" id="announcementModal" tabindex="-1" aria-labelledby="announcementModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form action="/admin/create-announcement" method="POST">
+          <div class="modal-header">
+            <h5 class="modal-title" id="announcementModalLabel">
+              <i class="fas fa-bullhorn"></i> Yeni Duyuru Oluştur
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="title" class="form-label">Başlık</label>
+              <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="mb-3">
+              <label for="content" class="form-label">İçerik</label>
+              <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            <button type="submit" class="btn btn-primary">Oluştur</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 
   <%- include('../partials/_footer') %>
