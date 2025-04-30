@@ -20,7 +20,13 @@
             <% students.forEach((student, index) => { %>
               <tr class="student-row">
                 <td><%= index + 1 %></td>
-                <td><%= student.studentNumber %></td>
+                <td>
+                  <%= student.studentNumber %>
+                  <button class="copy-btn btn btn-sm btn-light ms-2" data-copy="<%= student.studentNumber %>">
+                    <i class="fas fa-copy"></i>
+                  </button>
+                </td>
+                
                 <td><%= student.name %></td>
                 <td><%= student.lastname %></td>
                 <td><%= student.createdAt.toLocaleString('tr-TR') %></td>
@@ -37,6 +43,30 @@
   </div>
 
   <%- include('../partials/_footer') %>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const copyButtons = document.querySelectorAll('.copy-btn');
+
+    copyButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        const textToCopy = this.getAttribute('data-copy');
+        navigator.clipboard.writeText(textToCopy)
+          .then(() => {
+            this.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+              this.innerHTML = '<i class="fas fa-copy"></i>';
+            }, 1000);
+          })
+          .catch(err => {
+            alert('Kopyalama başarısız oldu.');
+            console.error(err);
+          });
+      });
+    });
+  });
+  </script>
 
   <style>
     .table-responsive {

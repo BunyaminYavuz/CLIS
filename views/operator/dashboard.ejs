@@ -57,7 +57,8 @@
                         <div class="col-md-5">
                             <div class="form-group">
                                 <label><i class="fas fa-user"></i> Öğrenci</label>
-                                <select class="form-control" name="studentId" required>
+                                <input type="text" class="form-control mb-2" id="studentSearch" placeholder="Öğrenci numarasına göre ara...">
+                                <select class="form-control" name="studentId" id="studentSelect" required>
                                     <option value="">Öğrenci Seçin</option>
                                     <% students.forEach(student => { %>
                                         <option value="<%= student._id %>" <%= student.currentComputer ? 'disabled' : '' %>>
@@ -193,30 +194,27 @@
                         }
                     }
 
-                    function toggleLabStatus(labId, checkbox) {
+                    async function toggleLabStatus(labId, checkbox) {
                         const newStatus = checkbox.checked;
 
-                        fetch(`/operator/toggleLabStatus/${labId}`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ isOpen: newStatus })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
+                        try {
+                            const response = await fetch(`/operator/toggleLabStatus/${labId}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ isOpen: newStatus })
+                            });
+                            const data = await response.json();
                             if (!data.success) {
                                 alert('Durum güncellenemedi');
                                 checkbox.checked = !checkbox.checked;
                             } else {
                                 console.log("Lab durumu güncellendi: ", data);
-                                // Sayfayı yenilemek yerine, sadece ilgili lab bölümünü güncelleyebilirsiniz.
-                                // Ancak şimdilik basitlik adına tam sayfa yenileme yapalım.
                                 location.reload();
                             }
-                        })
-                        .catch(error => {
+                        } catch (error) {
                             console.error('Hata:', error);
                             checkbox.checked = !checkbox.checked;
-                        });
+                        }
                     }
                 </script>
 
@@ -357,6 +355,18 @@
             });
         });
 
+        // Öğrenci arama
+        document.getElementById('studentSearch').addEventListener('input', function() {
+            const searchText = this.value.toLowerCase();
+            const studentSelect = document.getElementById('studentSelect');
+            const options = studentSelect.options;
+
+            for (let i = 0; i < options.length; i++) {
+                const optionText = options[i].textContent.toLowerCase();
+                options[i].style.display = optionText.includes(searchText) ? '' : 'none';
+            }
+        });
+
         // Bilgisayar atama
         document.getElementById('assignForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -407,7 +417,7 @@
                     alert('Oturum başarıyla sonlandırıldı');
                     location.reload();
                 } else {
-                  alert('Hata: ' + data.error);
+                    alert('Hata: ' + data.error);
                 }
             } catch (error) {
                 console.error('Hata:', error);
@@ -421,7 +431,7 @@
                 const startTime = new Date(el.dataset.start);
                 if (startTime) {
                     const duration = new Date() - startTime;
-                    const hours = Math.floor(duration / (1000 * 60 * 60));
+                    const hours = Math.floor(duration/ (1000 * 60 * 60));
                     const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((duration % (1000 * 60)) / 1000);
 
