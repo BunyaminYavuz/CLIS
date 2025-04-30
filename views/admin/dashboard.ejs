@@ -22,11 +22,6 @@
       </div>
     </div>
 
-    <div class="btn-group mb-3">
-      <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#announcementModal">
-        <i class="fas fa-bullhorn"></i> Create Announcement
-      </button>
-    </div>
 
     <!-- Özet Kartları -->
     <div class="row mb-4">
@@ -218,40 +213,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="card mb-4">
-      <div class="card-header">
-        <h5 class="card-title mb-0">Yeni Duyuru Oluştur</h5>
-      </div>
-      <div class="card-body">
-        <form id="announcementForm">
-          <div class="mb-3">
-            <label class="form-label">Başlık</label>
-            <input type="text" class="form-control" name="title" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">İçerik</label>
-            <textarea class="form-control" name="content" rows="3" required></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">Duyuru Oluştur</button>
-        </form>
-      </div>
-    </div>
-
-    <!-- Assuming you have a list of labs -->
-    <div class="row">
-      <% labs.forEach(lab => { %>
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title"><%= lab.name %></h5>
-              <p class="card-text"><%= lab.description %></p>
-              <a href="/admin/labs/<%= lab._id %>" class="btn btn-primary">Detayları Gör</a>
-            </div>
-          </div>
-        </div>
-      <% }) %>
     </div>
   </div>
 
