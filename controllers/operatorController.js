@@ -81,6 +81,12 @@ const assignComputer = async (req, res) => {
     const computer = await Computer.findById(computerId);
     const student = await User.findById(studentId);
 
+    const scannedStudent = await ScannedStudent.find({ studentNumber: student.studentNumber });
+
+    if (scannedStudent) {
+      await ScannedStudent.deleteOne({ studentNumber: student.studentNumber})
+    }
+
     if (!computer || !student) {
       return res.status(404).json({
         succeeded: false,
