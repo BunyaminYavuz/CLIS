@@ -474,8 +474,12 @@ const createAnnouncement = async (req, res) => {
       content
     });
 
-    res.status(201).json({
+    const announcements = await Announcement.find().sort({ createdAt: -1 });
+
+    res.status(201).render("admin/announcements", {
       succeeded: true,
+      link: 'admin-announcements',
+      announcements,
       message: "Announcement created successfully",
       announcement
     });
