@@ -86,12 +86,15 @@ const getDashboard = async (req, res) => {
       }, 0);
     }, 0);
 
+    let activeSessionsCount =  activeSessions.length;
+
     res.render('admin/dashboard', {
       link: 'admin-dashboard',
       userCount,
       studentCount,
       operatorCount,
       activeSessions,
+      activeSessionsCount,
       totalComputers,
       activeComputers,
       labCount,

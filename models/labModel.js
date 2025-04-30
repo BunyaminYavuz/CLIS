@@ -24,10 +24,12 @@ const labSchema = new Schema({
     type: Boolean,
     default: true
   },
+  /*
   closingTime: {
     type: String,
     required: function() { return this.isOpen; }
   },
+  */
   location: { type: String, required: true },
   equipment: { type: [String] },
   operatingHours: { type: String },
