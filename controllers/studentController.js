@@ -199,7 +199,7 @@ const getLabHistory = async (req, res) => {
       .populate('labUsageHistory.operator');
 
     // Calculate total duration
-    const totalDuration = user.labUsageHistory.reduce((total, session) => {
+    const totalDuration = user.labUsageHistory.sort((a, b) => new Date(b.startTime) - new Date(a.startTime)).reduce((total, session) => {
       if (session.endTime) {
         return total + (new Date(session.endTime) - new Date(session.startTime));
       }
