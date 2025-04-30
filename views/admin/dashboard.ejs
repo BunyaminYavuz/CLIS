@@ -58,7 +58,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h6 class="card-title mb-1">Aktif Oturumlar</h6>
-                <h3 class="mb-0"><%= activeSessions %></h3>
+                <h3 class="mb-0"><%= activeSessionsCount %></h3>
               </div>
               <i class="fas fa-desktop fa-2x opacity-50"></i>
             </div>
@@ -112,6 +112,21 @@
 
     <!-- Ana İçerik -->
     <div class="row">
+      <script>
+          function updateDuration(sessionId, startTime) {
+      const start = new Date(startTime);
+      setInterval(() => {
+        const now = new Date();
+        const duration = now - start;
+        const hours = Math.floor(duration / (1000 * 60 * 60));
+        const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((duration % (1000 * 60)) / 1000);
+        
+        document.getElementById(`duration-${sessionId}`).textContent = 
+          `${hours}s ${minutes}dk ${seconds}sn`;
+      }, 1000);
+    }
+         </script>
       <!-- Aktif Oturumlar -->
       <div class="col-md-8">
         <div class="card">
@@ -124,13 +139,13 @@
             <div class="table-responsive">
               <table class="table table-hover">
                 <thead>
-                  <tr>
+                  <tr>  
                     <th>Öğrenci</th>
                     <th>Laboratuvar</th>
                     <th>Bilgisayar</th>
                     <th>Başlangic</th>
                     <th>Süre</th>
-                    <th>İşlemler</th>
+                    <!-- <th>İşlemler</th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -138,26 +153,27 @@
                     <tr>
                       <td>
                         <div class="d-flex align-items-center">
-                          <img src="/images/avatar.png" class="rounded-circle me-2" width="32">
+                          <!-- <img src="/images/avatar.png" class="rounded-circle me-2" width="32"> -->
                           <div>
                             <%= session.user.name %> <%= session.user.lastname %>
                             <div class="small text-muted"><%= session.user.studentId %></div>
                           </div>
                         </div>
                       </td>
-                      <td><%= session.computer?.lab?.name || 'Bilinmiyor' %></td>
+                      <td><%= session.computer.name.match(/\d+$/)?.[0] || 'Bilinmiyor' %></td>
                       <td><%= session.computer.name %></td>
                       <td><%= formatTime(session.startTime) %></td>
                       <td id="duration-<%= session._id %>">
                         <script>
                           updateDuration('<%= session._id %>', '<%= session.startTime %>');
                         </script>
+                        
                       </td>
-                      <td>
+                      <!-- <td>
                         <button class="btn btn-sm btn-danger" onclick="endSession('<%= session._id %>')">
                           <i class="fas fa-stop-circle"></i> Sonlandır
                         </button>
-                      </td>
+                      </td> -->
                     </tr>
                   <% }) %>
                   <% if (activeSessions.length === 0) { %>
@@ -348,19 +364,7 @@
       }
     });
 
-    function updateDuration(sessionId, startTime) {
-      const start = new Date(startTime);
-      setInterval(() => {
-        const now = new Date();
-        const duration = now - start;
-        const hours = Math.floor(duration / (1000 * 60 * 60));
-        const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((duration % (1000 * 60)) / 1000);
-        
-        document.getElementById(`duration-${sessionId}`).textContent = 
-          `${hours}s ${minutes}dk ${seconds}sn`;
-      }, 1000);
-    }
+  
 
     async function endSession(sessionId) {
       if (confirm('Bu oturumu sonlandırmak istediğinize emin misiniz?')) {
