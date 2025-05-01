@@ -3,30 +3,159 @@
   <%- include('../partials/_navbar') %>
 
   <div class="container mt-5">
-    <h2>Laboratuvarlar</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Laboratuvar Adı</th>
-          <th>Açıklama</th>
-          <th>Kapasite</th>
-          <th>Detaylar</th>
-        </tr>
-      </thead>
-      <tbody>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold"><i class="fas fa-network-wired me-2"></i>Laboratuvarlar</h2>
+    </div>
+
+    <% if (labs.length > 0) { %>
+      <div class="row">
         <% labs.forEach(lab => { %>
-          <tr>
-            <td><%= lab.name %></td>
-            <td><%= lab.description %></td>
-            <td><%= lab.capacity %></td>
-            <td>
-              <a href="/admin/labs/<%= lab._id %>" class="btn btn-primary">Detayları Gör</a>
-            </td>
-          </tr>
+          <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-0 h-100 lab-card transition-card <%= lab.isOpen ? 'open' : 'closed' %>">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="card-title text-primary fw-bold">
+                    <i class="fas fa-network-wired me-2"></i><%= lab.name %>
+                  </h5>
+                  <div class="d-flex align-items-center">
+                    <% if (lab.isOpen) { %>
+                      <i class="fas fa-lightbulb text-success blinking me-2"></i>
+                      <span class="badge bg-success text-light blinking"></span>
+                    <% } else { %>
+                      <i class="fas fa-lightbulb text-danger blinking me-2"></i>
+                      <span class="badge bg-danger text-light blinking"></span>
+                    <% } %>
+                  </div>
+                </div>
+                <p class="card-text text-muted"><%= lab.description %></p>
+                <p class="card-text">
+                  <strong>Kapasite:</strong>
+                  <span class="badge bg-info text-dark"><%= lab.capacity %></span>
+                </p>
+                <a href="/admin/labs/<%= lab._id %>" class="btn btn-outline-primary w-100 mt-3 transition-btn">
+                  <i class="fas fa-arrow-right me-2"></i> Detayları Gör
+                </a>
+              </div>
+            </div>
+          </div>
         <% }) %>
-      </tbody>
-    </table>
+      </div>
+    <% } else { %>
+      <div class="alert alert-info text-center mt-4">
+        Kayıtlı laboratuvar bulunamadı.
+      </div>
+    <% } %>
   </div>
 
   <%- include('../partials/_footer') %>
-</body> 
+
+  <style>
+    .lab-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+      border-radius: 1rem;
+    }
+
+    .lab-card.open {
+      background-color: #d4edda; /* Açık renk zemin */
+    }
+
+    .lab-card.closed {
+      background-color: #f8d7da; /* Kapalı renk zemin */
+    }
+
+    .lab-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .transition-btn {
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .transition-btn:hover {
+      background-color: #0d6efd;
+      color: #fff;
+    }
+
+    .badge {
+      font-size: 0.875rem;
+      padding: 0.5rem;
+    }
+
+    .blinking {
+      animation: blink 1.5s infinite ease-in-out;
+    }
+
+    @keyframes blink {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.3;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .fa-lightbulb {
+      font-size: 1.2rem;
+      animation: pulse 1.5s infinite;
+    }
+
+    /* Pulse animation for the lightbulb icon */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Dynamic color transition for the lightbulb */
+    .fa-lightbulb.text-success {
+      animation: pulse-success 2s ease-in-out infinite;
+    }
+
+    .fa-lightbulb.text-danger {
+      animation: pulse-danger 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-success {
+      0% {
+        color: #28a745;
+        box-shadow: 0 0 10px rgba(40, 167, 69, 0.8);
+      }
+      50% {
+        color: #218838;
+        box-shadow: 0 0 20px rgba(40, 167, 69, 0.8);
+      }
+      100% {
+        color: #28a745;
+        box-shadow: 0 0 10px rgba(40, 167, 69, 0.8);
+      }
+    }
+
+    @keyframes pulse-danger {
+      0% {
+        color: #dc3545;
+        box-shadow: 0 0 10px rgba(220, 53, 69, 0.8);
+      }
+      50% {
+        color: #c82333;
+        box-shadow: 0 0 20px rgba(220, 53, 69, 0.8);
+      }
+      100% {
+        color: #dc3545;
+        box-shadow: 0 0 10px rgba(220, 53, 69, 0.8);
+      }
+    }
+  </style>
+</body>

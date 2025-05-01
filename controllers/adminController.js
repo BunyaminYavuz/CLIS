@@ -601,7 +601,7 @@ const getLabDetails = async (req, res) => {
 const getLabs = async (req, res) => {
   try {
     const labs = await Lab.find(); // Fetch all labs
-    res.render('admin/labs', { labs, link: 'admin-labs' }); // Render the labs view
+    res.render('admin/labs', { labs, link: 'admin-lab-details' }); // Render the labs view
   } catch (error) {
     console.error("Error fetching labs:", error);
     res.status(500).json({ error: "An error occurred while fetching labs" });

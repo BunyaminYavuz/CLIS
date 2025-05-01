@@ -35,10 +35,19 @@
                             <i class="fas fa-desktop"></i> <%= computer.name %>
                         </td>
                         <td>
-                            <span class="badge <%= lab.isOpen ? (computer.isUsed ? 'bg-danger' : 'bg-success') : 'bg-secondary' %>">
-                                <%= lab.isOpen ? (computer.isUsed ? 'Kullanımda' : 'Boş') : 'Kapalı' %>
-                            </span>
-                        </td>
+                            <% if (!lab.isOpen) { %>
+                              <span class="badge bg-secondary">Kapalı</span>
+                            <% } else if (computer.status === 'maintenance') { %>
+                              <span class="badge bg-warning text-dark">Bakımda</span>
+                            <% } else if (computer.status === 'broken') { %>
+                              <span class="badge bg-dark">Arızalı</span>
+                            <% } else { %>
+                              <span class="badge <%= computer.isUsed ? 'bg-danger' : 'bg-success' %>">
+                                <%= computer.isUsed ? 'Kullanımda' : 'Müsait' %>
+                              </span>
+                            <% } %>
+                          </td>
+                          
                         <td>
                             <%= lab.name %>
                         </td>

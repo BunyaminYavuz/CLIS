@@ -23,6 +23,9 @@
                           <ul class="navbar-nav mr-auto">
                              <% if (user) { %>
                                <% if (user.role === 'admin') { %>
+                                 <li class="nav-item <%= link === 'index' ? 'active' : '' %>">
+                                    <a class="nav-link" href="/">Anasayfa</a>
+                                  </li>
                                  <li class="nav-item <%= link === 'admin-dashboard' ? 'active' : '' %>">
                                     <a class="nav-link" href="/admin/dashboard">Dashboard</a>
                                   </li>
@@ -49,7 +52,7 @@
                                  <li class="nav-item <%= link === 'student-dashboard' ? 'active' : '' %>">
                                     <a class="nav-link" href="/student/dashboard">Ana Sayfa</a>
                                   </li>
-                                  <li class="nav-item <%= link === 'student-history' ? 'active' : '' %>">
+                                  <li class="nav-item <%= link === 'lab-history' ? 'active' : '' %>">
                                     <a class="nav-link" href="/student/lab-history">Kullanım Geçmişi</a>
                                   </li>
                                   <li class="nav-item <%= link === 'lab-computer-status' ? 'active' : '' %>">
