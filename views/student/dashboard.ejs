@@ -41,7 +41,7 @@
             <% todaySessions.forEach(session => { %>
               <tr>
                 <td><%= session.computer?.name || 'Bilinmiyor' %></td>
-                <td><%= activeLab.name %></td>
+                <td><%= activeLab?.name %></td>
                 <td><%= session.operator.name %> <%= session.operator.lastname %></td>
                 <td><%= formatDate(session.startTime) %></td>
                 <td><i class="fas fa-spinner fa-spin"></i><%= session.endTime ? formatDate(session.endTime) : 'Devam Ediyor' %></td>

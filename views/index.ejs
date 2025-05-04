@@ -13,106 +13,184 @@
       <!-- end header inner -->
       <!-- end header -->
       <!-- banner -->
-      <section class="banner_main">
-        <img src="/images/bgii.jpg" alt="Laboratuvar Arka Plan" class="img-fluid" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
-        <div id="banner1" class="carousel slide" data-ride="carousel">
-            <ol class="carousel-indicators">
-                <% announcements.forEach((announcement, index) => { %>
-                    <li data-target="#banner1" data-slide-to="<%= index %>" class="<%= index === 0 ? 'active' : '' %>"></li>
-                <% }) %>
-            </ol>
-            <div class="carousel-inner">
-                <% announcements.forEach((announcement, index) => { %>
-                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                        <div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
-                            <div class="announcement-card text-center shadow-lg p-4 rounded">
-                                <h3 class="announcement-title"><%= announcement.title %></h3>
-                                <p class="announcement-content"><%= announcement.content %></p>
-                                <% if (announcement.link) { %>
-                                    <a href="<%= announcement.link %>" class="btn btn-primary mt-3">Detayları Gör</a>
-                                <% } %>
-                            </div>
-                        </div>
-                    </div>
-                <% }) %>
-            </div>
-            <a class="carousel-control-prev" href="#banner1" role="button" data-slide="prev">
-                <i class="fa fa-chevron-left" aria-hidden="true"></i>
-            </a>
-            <a class="carousel-control-next" href="#banner1" role="button" data-slide="next">
-                <i class="fa fa-chevron-right" aria-hidden="true"></i>
-            </a>
+      <section class="banner_main position-relative">
+        <!-- <img src="/images/lab_dark_bg.jpg" alt="Laboratuvar Arka Plan" class="img-fluid position-absolute w-100 h-100" style="object-fit: cover; z-index: 1; opacity: 0.85;"> -->
+        <div class="position-absolute w-100 h-100" style="background: rgba(0, 0, 0, 0.5); z-index: 2;"></div>
+      
+        <div id="banner1" class="carousel slide" data-ride="carousel" style="position: relative; z-index: 3;">
+          <ol class="carousel-indicators">
+            <% announcements.forEach((announcement, index) => { %>
+              <li data-target="#banner1" data-slide-to="<%= index %>" class="<%= index === 0 ? 'active' : '' %>"></li>
+            <% }) %>
+          </ol>
+      
+          <div class="carousel-inner">
+            <% announcements.forEach((announcement, index) => { %>
+              <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                <div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+                  <div class="announcement-card text-center shadow-lg p-5 animated fadeInUp">
+                    <h3 class="announcement-title"><%= announcement.title %></h3>
+                    <p class="announcement-content short-text" id="content-<%= index %>">
+                      <%= announcement.content.length > 300 ? announcement.content.substring(0, 300) + "..." : announcement.content %>
+                    </p>
+                    <% if (announcement.content.length > 300) { %>
+                        <button class="btn btn-outline-light custom-readmore-btn mt-2" onclick="toggleFullText(<%= index %>, `<%- announcement.content.replace(/`/g, '\\`') %>`)">Devamını Oku</button>
+                      <% } %>                      
+                    <% if (announcement.link) { %>
+                      <a href="<%= announcement.link %>" class="btn btn-outline-light mt-2 ml-2">Detayları Gör</a>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+      
+          <a class="carousel-control-prev" href="#banner1" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" style="filter: invert(1);"></span>
+            <span class="sr-only">Önceki</span>
+          </a>
+          <a class="carousel-control-next" href="#banner1" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" style="filter: invert(1);"></span>
+            <span class="sr-only">Sonraki</span>
+          </a>
         </div>
-    </section>
-    
-    <style>
+      </section>
+      
+      <style>
         .announcement-card {
-            background: rgba(255, 255, 255, 0.95);
-            max-width: 600px;
-            border-radius: 15px;
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+          background: rgba(3, 65, 100, 0.95);
+          max-width: 700px;
+          border-radius: 18px;
+          transition: all 0.4s ease;
         }
+      
         .announcement-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+          transform: translateY(-8px);
+          box-shadow: 0 15px 25px rgba(0, 0, 0, 0.25);
         }
+      
         .announcement-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
+          font-size: 2rem;
+          font-weight: 700;
+          color:rgb(190, 111, 19);
         }
+      
         .announcement-content {
-            font-size: 18px;
-            color: #555;
+          font-size: 1.2rem;
+          color:rgb(149, 198, 214);
+          margin-top: 10px;
         }
-        .carousel-inner {
-            animation: fadeIn 1s ease-in-out;
-        }
+        .custom-readmore-btn {
+         border-color: rgb(190, 111, 19);
+         color: rgb(190, 111, 19);
+         font-weight: 500;
+         transition: all 0.3s ease-in-out;
+         }
+
+        .custom-readmore-btn:hover {
+        background-color: rgb(190, 111, 19);
+        color: white;
+       }
+
+      
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
-    </style>
+      
+        @media (max-width: 768px) {
+          .announcement-title {
+            font-size: 1.5rem;
+          }
+      
+          .announcement-content {
+            font-size: 1rem;
+          }
+      
+          .announcement-card {
+            padding: 20px;
+          }
+        }
+      </style>
+      
+      <script>
+        function toggleFullText(index, fullText) {
+          const contentEl = document.getElementById('content-' + index);
+          const isShort = contentEl.classList.contains('short-text');
+      
+          if (isShort) {
+            contentEl.innerText = fullText;
+            contentEl.classList.remove('short-text');
+            const btn = contentEl.nextElementSibling;
+            btn.innerText = 'Kapat';
+          } else {
+            contentEl.innerText = fullText.substring(0, 300) + '...';
+            contentEl.classList.add('short-text');
+            const btn = contentEl.nextElementSibling;
+            btn.innerText = 'Devamını Oku';
+          }
+        }
+      </script>
+      
     
     
      
       <!-- end banner -->
       <!-- three_box -->
-      <div class="three_box">
-         <div class="container">
-            <div class="row">
-               <div class="col-md-4">
-                  <div class="box_text">
-                     <i><img src="images/thr.png" alt="#"/></i>
-                     <h3>Computer</h3>
-                     <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. </p>
-                  </div>
-               </div>
-               <div class="col-md-4">
-                  <div class="box_text">
-                     <i><img src="images/thr1.png" alt="#"/></i>
-                     <h3>Laptop</h3>
-                     <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. </p>
-                  </div>
-               </div>
-               <div class="col-md-4">
-                  <div class="box_text">
-                     <i><img src="images/thr2.png" alt="#"/></i>
-                     <h3>Tablet</h3>
-                     <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. </p>
-                  </div>
-               </div>
+      <div class="three_box py-5" style="background-color: #200129;">
+        <div class="container">
+          <h2 class="text-center mb-5" style="color: rgb(190, 111, 19); font-weight: 700; font-size: 2.2rem;">
+            Üç Basit Adımda Laboratuvar Kullanımı
+          </h2>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="step-card text-center p-4 rounded shadow h-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="fa fa-id-card fa-3x mb-3" style="color: rgb(190, 111, 19);"></i>
+                <h4 class="step-title mb-2">Öğrenci Girişi</h4>
+                <p class="step-desc">Öğrenci laboratuvara geldiğinde öğrenci kartını okutarak sisteme giriş yapar.</p>
+              </div>
             </div>
-         </div>
+            <div class="col-md-4">
+              <div class="step-card text-center p-4 rounded shadow h-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="fa fa-desktop fa-3x mb-3" style="color: rgb(190, 111, 19);"></i>
+                <h4 class="step-title mb-2">Bilgisayar Seçimi ve Atama</h4>
+                <p class="step-desc">Öğrenci uygun bir bilgisayar seçer. Operatör, sistem üzerinden bu öğrenciye seçtiği bilgisayarı atar.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="step-card text-center p-4 rounded shadow h-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="fa fa-sign-out-alt fa-3x mb-3" style="color: rgb(190, 111, 19);"></i>
+                <h4 class="step-title mb-2">Çıkış ve Atama Kaldırma</h4>
+                <p class="step-desc">Öğrenci bilgisayarı kullanmayı bitirdiğinde operatöre bildirir ve operatör öğrencinin bilgisayarla olan atamasını sistemden kaldırır.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+      
+      <style>
+      .step-card {
+        background-color: rgba(5, 46, 70, 0.95); /* mavi ton */
+      }
+      .step-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: rgb(190, 111, 19);
+      }
+      .step-desc {
+        font-size: 1.1rem;
+        color: rgb(149, 198, 214);
+      }
+      </style>
+      
+      
+      <hr style="border-top: 1px solid rgb(190, 111, 19); margin: 0.2px auto; width: 1%; border-radius: 1px;">
+
+
       <!-- three_box -->
       
       <!-- laptop  section -->
-      <div class="laptop">
+      <!-- <div class="laptop">
          <div class="container">
             <div class="row">
                <div class="col-md-6">
@@ -129,93 +207,102 @@
                </div>
             </div>
          </div>
-      </div>
+      </div> -->
       </div>
       <!-- end laptop  section -->
       <!-- customer -->
-<div class="customer">
-   <div class="container">
-       <div class="row">
-           <div class="col-md-12">
-               <div class="titlepage">
-                   <h2>COMPUTER LABORATORIES RULES</h2>
-               </div>
-           </div>
-       </div>
-       <div class="row">
-           <div class="col-md-12">
-               <div id="myCarousel" class="carousel slide customer_Carousel" data-ride="carousel">
-                   <ol class="carousel-indicators">
-                       <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                       <li data-target="#myCarousel" data-slide-to="1"></li>
-                       <li data-target="#myCarousel" data-slide-to="2"></li>
-                   </ol>
-                   <div class="carousel-inner">
-                       <div class="carousel-item active">
-                           <div class="container">
-                               <div class="carousel-caption">
-                                   <div class="row">
-                                       <div class="col-md-9 offset-md-3">
-                                           <div class="test_box">
-                                               <i><img src="images/cos.png" alt="#" /></i>
-                                               <h4>Rule 1: Respect Others</h4>
-                                               <p>Always be respectful to your peers and instructors. Avoid loud conversations and distractions.</p>
-                                           </div>
-                                       </div>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                       <div class="carousel-item">
-                           <div class="container">
-                               <div class="carousel-caption">
-                                   <div class="row">
-                                       <div class="col-md-9 offset-md-3">
-                                           <div class="test_box">
-                                               <i><img src="images/cos.png" alt="#" /></i>
-                                               <h4>Rule 2: Keep Workstations Clean</h4>
-                                               <p>Maintain a clean workspace. Dispose of waste properly and return equipment to its designated place.</p>
-                                           </div>
-                                       </div>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                       <div class="carousel-item">
-                           <div class="container">
-                               <div class="carousel-caption">
-                                   <div class="row">
-                                       <div class="col-md-9 offset-md-3">
-                                           <div class="test_box">
-                                               <i><img src="images/cos.png" alt="#" /></i>
-                                               <h4>Rule 3: No Food or Drink</h4>
-                                               <p>For the safety of equipment and hygiene, do not consume food or drinks in the computer lab.</p>
-                                           </div>
-                                       </div>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-                   <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
-                       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                       <span class="sr-only">Previous</span>
-                   </a>
-                   <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
-                       <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                       <span class="sr-only">Next</span>
-                   </a>
-               </div>
-           </div>
-       </div>
-   </div>
-</div>
+      <div class="lab-rules-section py-5" style="background: linear-gradient(to right, #1a022e, #200129);">
+        <div class="container">
+          <div class="text-center mb-5">
+            <h2 style="color: rgb(190, 111, 19); font-size: 2.2rem; font-weight: 700;">Laboratuvar Kuralları</h2>
+          </div>
+      
+          <div id="labRulesCarousel" class="carousel slide" data-ride="carousel">
+            <ol class="carousel-indicators">
+              <li data-target="#labRulesCarousel" data-slide-to="0" class="active"></li>
+              <li data-target="#labRulesCarousel" data-slide-to="1"></li>
+              <li data-target="#labRulesCarousel" data-slide-to="2"></li>
+            </ol>
+            <div class="carousel-inner">
+              <!-- Kural 1 -->
+              <div class="carousel-item active">
+                <div class="d-flex justify-content-center">
+                  <div class="rule-card text-center p-4">
+                    <img src="images/cos.png" class="rule-icon mb-3" alt="Kural Simgesi">
+                    <h4 class="rule-title">Kural 1: Başkalarına Saygı Gösterin</h4>
+                    <p class="rule-text">Arkadaşlarınıza ve eğitmenlerinize her zaman saygılı olun. Yüksek sesle konuşmaktan ve dikkat dağıtmaktan kaçının.</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Kural 2 -->
+              <div class="carousel-item">
+                <div class="d-flex justify-content-center">
+                  <div class="rule-card text-center p-4">
+                    <img src="images/cos.png" class="rule-icon mb-3" alt="Kural Simgesi">
+                    <h4 class="rule-title">Kural 2: Çalışma Alanlarını Temiz Tutun</h4>
+                    <p class="rule-text">Çalışma alanınızı temiz tutun. Atıkları uygun şekilde atın ve ekipmanları yerine koyun.</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Kural 3 -->
+              <div class="carousel-item">
+                <div class="d-flex justify-content-center">
+                  <div class="rule-card text-center p-4">
+                    <img src="images/cos.png" class="rule-icon mb-3" alt="Kural Simgesi">
+                    <h4 class="rule-title">Kural 3: Yiyecek ve İçecek Yasaktır</h4>
+                    <p class="rule-text">Ekipman güvenliği ve hijyen için laboratuvar içinde yiyecek ve içecek tüketmeyin.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <a class="carousel-control-prev" href="#labRulesCarousel" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Önceki</span>
+            </a>
+            <a class="carousel-control-next" href="#labRulesCarousel" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Sonraki</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <style>
+        .rule-card {
+          background-color: rgba(255, 255, 255, 0.95);
+          border-radius: 16px;
+          max-width: 700px;
+          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+      
+        .rule-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+        }
+      
+        .rule-title {
+          color: rgb(190, 111, 19);
+          font-weight: 600;
+          font-size: 1.4rem;
+        }
+      
+        .rule-text {
+          color: #4a4a4a;
+          font-size: 1.1rem;
+        }
+      
+        .rule-icon {
+          width: 60px;
+          height: 60px;
+        }
+      </style>
+      
+      
 <!-- end customer -->
 
 
 
       
       <!--  footer -->
-      <%- include('partials/_footer') %>
-
-
+         <%- include('partials/_footer') %> 
