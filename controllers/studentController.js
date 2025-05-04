@@ -52,33 +52,38 @@ const getStudentDashboard = async (req, res) => {
       .populate('labUsageHistory.computer')
       .populate('labUsageHistory.operator');
 
-    const labs = await Lab.find(); // Fetch all labs
-    const computers = await Computer.find(); // Fetch all computers
+    const labs = await Lab.find(); // Tüm lablar
+    const computers = await Computer.find(); // Tüm bilgisayarlar
 
-    // Get today's date
+    // Bugünün tarihi
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Filter today's sessions
-    const todaySessions = user.labUsageHistory.filter(session => {
+    // Bugünkü oturumları filtrele
+    const todaySessions = (user.labUsageHistory || []).filter(session => {
       const startTime = new Date(session.startTime);
       return startTime >= today;
     });
 
-    // Check for active session
+    // Aktif oturumu bul
     const activeSession = todaySessions.find(session => !session.endTime);
-    let activeLab = await Lab.findById(activeSession.computer.lab);
-    console.log("AciveSession: ", activeSession);
-    console.log("AciveLab: ", activeLab);
-    
+    let activeLab = null;
 
-    // Prepare lab computer status
+    if (activeSession && activeSession.computer && activeSession.computer.lab) {
+      activeLab = await Lab.findById(activeSession.computer.lab);
+    }
+
+    // Lab bilgisayar durumlarını hazırla
     const labComputerStatus = labs.map(lab => {
-      const labComputers = computers.filter(computer => computer.lab && computer.lab.toString() === lab._id.toString());
+      const labComputers = computers.filter(computer =>
+        computer.lab && computer.lab.toString() === lab._id.toString()
+      );
       const status = labComputers.map(computer => ({
         name: computer.name,
-        isUsed: user.labUsageHistory.some(session => 
-          session.computer && session.computer.toString() === computer._id.toString() && session.endTime === null
+        isUsed: user.labUsageHistory.some(session =>
+          session.computer &&
+          session.computer._id.toString() === computer._id.toString() &&
+          session.endTime === null
         )
       }));
       return {
@@ -108,6 +113,7 @@ const getStudentDashboard = async (req, res) => {
     });
   }
 };
+
 
 // İstatistik hesaplama yardımcı fonksiyonu
 function calculateUserStats(history) {
