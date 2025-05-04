@@ -290,6 +290,7 @@ const createOperator = async (req, res) => {
       lastname,
       email,
       password,
+      rfid_id: "0",
       role: 'operator'
     });
 
@@ -608,6 +609,53 @@ const getLabs = async (req, res) => {
   }
 };
 
+const getOperatorsPage = async (req, res) => {
+  try {
+      const operators = await User.find({ role: "operator" }); // Tüm operatörleri getir
+      res.render('admin/operators', { operators, link: 'admin-operators' }); // 'operators' dizisini gönder
+  } catch (error) {
+      console.error("Operatörler alınırken hata:", error);
+      res.status(500).json({ error: "Operatörler alınırken bir hata oluştu" });
+  }
+};
+
+const getOperatorPage = async (req, res) => {
+  try {
+      const operatorId = req.params.id; // URL'den operatör ID'sini al
+      const operator = await User.findById(operatorId);
+
+      if (!operator) {
+          return res.status(404).send('Operatör bulunamadı.');
+      }
+
+      const labs = await Lab.find(); // İhtiyaç duyulursa diğer verileri de alabilirsiniz
+      res.render('admin/operator', { operator, labs, link: 'admin-operators' }); // Tekil operatör bilgisini gönder
+  } catch (error) {
+      console.error("Operatör bilgileri alınırken hata:", error);
+      res.status(500).json({ error: "Operatör bilgileri alınırken bir hata oluştu" });
+  }
+};
+
+
+const deleteOperator = async (req, res) => {
+  try {
+      const operatorId = req.params.id;
+
+      const deletedOperator = await User.findByIdAndDelete(operatorId);
+
+      if (!deletedOperator) {
+          return res.status(404).json({ message: 'Operatör bulunamadı.' });
+      }
+
+      // İsteğe bağlı: Operatöre ait başka verileri de silmeniz gerekebilir (örneğin, lablarla ilişkisi varsa)
+
+      res.redirect('/admin/operators'); // Operatör listesi sayfasına geri yönlendir
+  } catch (error) {
+      console.error("Operatör silinirken hata:", error);
+      res.redirect(`/admin/operators/${req.params.operatorId}`); // Aynı sayfaya geri yönlendir veya bir hata sayfası göster
+  }
+};
+
 const getAddComputerPage = async (req, res) => {
   try {
     const labs = await Lab.find(); // Fetch all labs
@@ -624,4 +672,4 @@ const getAddComputerPage = async (req, res) => {
   }
 };
 
-export { getDashboard, getReports, generateReport, createOperator, createComputer, updateComputerStatus, createCategory, createLab, endSession, createAnnouncement, getAnnouncements, getLabDetails, getLabs, getAddComputerPage, updateAnnouncement, getAnnouncement, deleteAnnouncement }; 
+export { getDashboard, getReports, generateReport, createOperator, createComputer, updateComputerStatus, createCategory, createLab, endSession, createAnnouncement, getAnnouncements, getLabDetails, getLabs, getAddComputerPage, updateAnnouncement, getAnnouncement, deleteAnnouncement, getOperatorsPage, getOperatorPage, deleteOperator }; 

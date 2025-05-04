@@ -8,6 +8,11 @@ router.get("/reports", adminController.getReports);
 router.get("/labs", adminController.getLabs);
 router.get("/labs/:id", adminController.getLabDetails);
 router.post("/generate-report", adminController.generateReport);
+
+// Operator routes
+router.get("/operators", adminController.getOperatorsPage);
+router.get("/operators/:id", adminController.getOperatorPage);
+router.post('/operators/delete/:id', adminController.deleteOperator);
 router.post("/create-operator", adminController.createOperator);
 
 // Computer routes

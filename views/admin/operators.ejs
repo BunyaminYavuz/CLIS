@@ -1,0 +1,82 @@
+<%- include('../partials/_header') %>
+<body class="main-layout inner_posituong">
+    <%- include('../partials/_navbar') %>
+
+    <div class="container mt-5">
+        <div class="row mb-3 align-items-center">
+            <div class="col-md-6">
+                <h2 class="fw-bold text-primary mb-0">
+                    <i class="fas fa-users-cog me-2"></i> Operatör Listesi
+                </h2>
+            </div>
+            <div class="col-md-6 text-end">
+                <button type="button" class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                    <i class="fas fa-user-plus me-2"></i> Yeni Operatör Ekle
+                </button>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm rounded-4 border-0">
+                    <div class="card-body p-4">
+                        <% if (operators && operators.length > 0) { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Ad Soyad</th>
+                                            <th>E-posta</th>
+                                            <th>Rol</th>
+                                            <th class="text-end">İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% operators.forEach((operator, index) => { %>
+                                            <tr>
+                                                <td><%= index + 1 %></td>
+                                                <td><%= operator.name %> <%= operator.lastname %></td>
+                                                <td><%= operator.email %></td>
+                                                <td>
+                                                    <% if (operator.role === 'admin') { %>
+                                                        <span class="badge bg-danger"><i class="fas fa-crown me-1"></i> Yönetici</span>
+                                                    <% } else if (operator.role === 'operator') { %>
+                                                        <span class="badge bg-success"><i class="fas fa-user-cog me-1"></i> Operatör</span>
+                                                    <% } else { %>
+                                                        <span class="badge bg-secondary"><%= operator.role %></span>
+                                                    <% } %>
+                                                </td>
+                                                <td class="text-end">
+                                                    <a href="/admin/operators/<%= operator._id %>" class="btn btn-sm btn-outline-primary rounded-pill me-2" title="Detaylar">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    </td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } else { %>
+                            <div class="alert alert-info text-center" role="alert">
+                                <i class="fas fa-info-circle me-2"></i> Kayıtlı operatör bulunmamaktadır.
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/_addUserModal') %>
+    <%- include('../partials/_footer') %>
+
+    <style>
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .badge {
+            font-size: 0.8rem;
+        }
+    </style>
+</body>

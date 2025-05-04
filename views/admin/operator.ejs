@@ -1,0 +1,60 @@
+<%- include('../partials/_header') %>
+<body class="main-layout inner_posituong">
+    <%- include('../partials/_navbar') %>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg rounded-4 border-0">
+                    <div class="card-header bg-primary text-white rounded-top-4 p-3">
+                        <h5 class="mb-0"><i class="fas fa-user-cog me-2"></i> Operatör Detayları</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <h6 class="card-subtitle text-muted mb-3">
+                            <i class="fas fa-info-circle me-1"></i> Operatörün temel bilgileri aşağıda yer almaktadır.
+                        </h6>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-user me-1"></i> Ad</label>
+                            <input type="text" class="form-control rounded-pill" value="<%= operator.name %>" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-user-tie me-1"></i> Soyad</label>
+                            <input type="text" class="form-control rounded-pill" value="<%= operator.lastname %>" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-envelope me-1"></i> E-posta</label>
+                            <input type="email" class="form-control rounded-pill" value="<%= operator.email %>" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-briefcase me-1"></i> Rol</label>
+                            <input type="text" class="form-control rounded-pill" value="<%= operator.role %>" readonly>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="/admin/operators" class="btn btn-outline-secondary rounded-pill">
+                                <i class="fas fa-arrow-left me-1"></i> Operatör Listesine Dön
+                            </a>
+                            <form action="/admin/operators/delete/<%= operator._id %>" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-danger rounded-pill" onclick="return confirm('Bu operatörü silmek istediğinize emin misiniz?');">
+                                    <i class="fas fa-trash-alt me-1"></i> Sil
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/_footer') %>
+
+    <style>
+        .form-label {
+            margin-bottom: 0.3rem;
+            color: #555;
+        }
+    </style>
+</body>
