@@ -12,7 +12,8 @@
           <h4 class="card-title text-primary">Aktif Oturum</h4>
           <p class="card-text">
             <strong>Bilgisayar:</strong> <%= activeSession.computer.name %><br>
-            <strong>Laboratuvar:</strong> <%= activeSession.computer.lab.name %><br>
+            <strong>Laboratuvar:</strong> <%= activeLab.name %><br>
+            <strong>Operator:</strong> <%= activeSession.operator.name %> <%= activeSession.operator.lastname %><br>
             <strong>Başlangıç:</strong> <%= formatDate(activeSession.startTime) %>
           </p>
         </div>
@@ -30,6 +31,7 @@
             <tr>
               <th>Bilgisayar</th>
               <th>Laboratuvar</th>
+              <th>Operator</th>
               <th>Başlangıç</th>
               <th>Bitiş</th>
               <th>Süre</th>
@@ -39,10 +41,12 @@
             <% todaySessions.forEach(session => { %>
               <tr>
                 <td><%= session.computer?.name || 'Bilinmiyor' %></td>
-                <td><%= session.computer.name.match(/\d+$/)?.[0] || 'Bilinmiyor' %></td>
+                <td><%= activeLab.name %></td>
+                <td><%= session.operator.name %> <%= session.operator.lastname %></td>
                 <td><%= formatDate(session.startTime) %></td>
-                <td><%= session.endTime ? formatDate(session.endTime) : 'Devam Ediyor' %></td>
+                <td><i class="fas fa-spinner fa-spin"></i><%= session.endTime ? formatDate(session.endTime) : 'Devam Ediyor' %></td>
                 <td>
+                  <i class="fas fa-spinner fa-spin"></i>
                   <%= session.endTime ? formatDuration(new Date(session.endTime) - new Date(session.startTime)) : 'Devam Ediyor' %>
                 </td>
               </tr>

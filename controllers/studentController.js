@@ -67,6 +67,10 @@ const getStudentDashboard = async (req, res) => {
 
     // Check for active session
     const activeSession = todaySessions.find(session => !session.endTime);
+    let activeLab = await Lab.findById(activeSession.computer.lab);
+    console.log("AciveSession: ", activeSession);
+    console.log("AciveLab: ", activeLab);
+    
 
     // Prepare lab computer status
     const labComputerStatus = labs.map(lab => {
@@ -84,6 +88,7 @@ const getStudentDashboard = async (req, res) => {
     });
 
     res.render("student/dashboard", {
+      activeLab,
       user,
       labs,
       computers,
@@ -253,6 +258,7 @@ const getLabComputerStatus = async (req, res) => {
         computers: computers.map(computer => ({
           name: computer.name,
           isUsed: computer.isUsed, // DB'deki gerçek kullanım durumunu al
+          status: computer.status
         })),
         isOpen: lab.isOpen,
         id: lab._id

@@ -1,5 +1,5 @@
-
 <%- include('../partials/_header') %>
+
 <body class="main-layout inner_posituong">
   <%- include('../partials/_navbar') %>
 
@@ -21,7 +21,7 @@
               <% if (lab.equipment && lab.equipment.length > 0) { %>
                 <p class="text-muted"><i class="fas fa-tools"></i> <strong>Ekipmanlar:</strong> <%= lab.equipment.join(', ') %></p>
               <% } %>
-              <a href="/student/lab-computer-status?labId=<%= lab.id %>" 
+              <a href="/student/lab-computer-status?labId=<%= lab.id %>"
                  class="btn btn-outline-primary w-100 mt-2 rounded-3">🔍 Detayları Göster</a>
             </div>
           </div>
@@ -31,34 +31,57 @@
 
     <% if (selectedLabComputers) { %>
       <div class="mt-5 p-4 rounded-4 shadow-lg mx-auto"
-          style="border: 6px solid <%= selectedLabComputers.isOpen ? '#198754' : '#dc3545' %>;
+           style="border: 6px solid <%= selectedLabComputers.isOpen ? '#198754' : '#dc3545' %>;
                   background-color: white;
                   width: 80%;">
-  
-  <h3 class="text-center fw-bold" style="color: <%= selectedLabComputers.isOpen ? '#198754' : '#dc3545' %>;">
-    <i class="fas fa-desktop"></i> <%= selectedLabComputers.labName %>
-    <% if (selectedLabComputers.isOpen) { %>
-        <i class="fas fa-door-open text-success"></i>
-    <% } else { %>
-        <i class="fas fa-door-closed text-danger"></i>
-    <% } %>
-</h3>
-  
-          <div class="row justify-content-center">
-              <% selectedLabComputers.computers.forEach(computer => { %>
-                  <div class="col-md-3">
-                      <div class="card mt-3 border-0 shadow-sm text-center p-3 rounded-3">
-                          <div class="card-body">
-                              <i class="fas fa-desktop fa-6x"
-                                 style="color: <%= selectedLabComputers.isOpen ? (computer.isUsed ? '#dc3545' : '#198754') : '#dc3545' %>; transition: color 0.3s;"></i>
-                              <h5 class="card-title mt-2 fw-semibold text-muted"><%= computer.name %></h5>
-                          </div>
-                      </div>
-                  </div>
-              <% }) %>
-          </div>
+
+        <h3 class="text-center fw-bold" style="color: <%= selectedLabComputers.isOpen ? '#198754' : '#dc3545' %>;">
+          <i class="fas fa-desktop"></i> <%= selectedLabComputers.labName %>
+          <% if (selectedLabComputers.isOpen) { %>
+              <i class="fas fa-door-open text-success"></i>
+          <% } else { %>
+              <i class="fas fa-door-closed text-danger"></i>
+          <% } %>
+        </h3>
+
+        <div class="row justify-content-center">
+          <% selectedLabComputers.computers.forEach(computer => { %>
+            <div class="col-md-3">
+              <div class="card mt-3 border-0 shadow-sm text-center p-3 rounded-3">
+                <div class="card-body">
+                  <i class="fas fa-desktop fa-6x"
+                     style="color: <%= selectedLabComputers.isOpen 
+                                     ? (computer.status === 'broken' 
+                                         ? '#dc3545' 
+                                         : (computer.status === 'maintenance' 
+                                             ? '#ffc107' 
+                                             : (computer.isUsed 
+                                                 ? '#dc3545' 
+                                                 : '#198754'))) 
+                                     : '#000000' %>; transition: color 0.3s;">
+                  </i>
+                  <h5 class="card-title mt-2 fw-semibold text-muted"><%= computer.name %></h5>
+
+                  <% if (!selectedLabComputers.isOpen) { %>
+                    <span class="badge bg-secondary">Kapalı</span>
+                  <% } else { %>
+                    <% if (computer.status === 'maintenance') { %>
+                      <span class="badge bg-warning text-dark">Bakımda</span>
+                    <% } else if (computer.status === 'broken') { %>
+                      <span class="badge bg-dark">Arızalı</span>
+                    <% } else { %>
+                      <span class="badge <%= computer.isUsed ? 'bg-danger' : 'bg-success' %>">
+                        <%= computer.isUsed ? 'Kullanımda' : 'Müsait' %>
+                      </span>
+                    <% } %>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
       </div>
-  <% } %>
+    <% } %>
   </div>
 
   <%- include('../partials/_footer') %>
