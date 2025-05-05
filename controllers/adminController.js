@@ -4,6 +4,7 @@ import PDFDocument from 'pdfkit';
 import { PassThrough } from 'stream';
 import Announcement from "../models/announcementModel.js";
 import Lab from "../models/labModel.js";
+import xlsx from 'xlsx'; 
 
 const getDashboard = async (req, res) => {
   try {
@@ -122,6 +123,95 @@ const getDashboard = async (req, res) => {
     });
   }
 };
+
+
+// Get all students
+const getStudentsPage = async (req, res) => {
+  try {
+    res.status(200).render('admin/import-students', {
+      link: 'admin-students'
+    });
+  } catch (error) {
+    console.error("Error fetching students:", error);
+    res.status(500).json({
+      succeeded: false,
+      error: "An error occurred while fetching students"
+    });
+  }
+};
+
+const importStudentsFromExcel = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ succeeded: false, error: "Lütfen bir Excel dosyası yükleyin." });
+    }
+
+    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const jsonData = xlsx.utils.sheet_to_json(sheet, { defval: '' });
+
+    const requiredFields = ['name', 'lastname', 'email', 'studentNumber', 'rfid_id', 'password'];
+    const headers = Object.keys(jsonData[0] || {});
+
+    const missingHeaders = requiredFields.filter(field => !headers.includes(field));
+    if (missingHeaders.length > 0) {
+      return res.status(400).json({
+        succeeded: false,
+        error: `Excel dosyasında eksik başlık(lar) var: ${missingHeaders.join(', ')}`
+      });
+    }
+
+    const createdStudents = [];
+    const updatedStudents = [];
+    const skippedStudents = [];
+
+    for (const row of jsonData) {
+      const missingFields = requiredFields.filter(field => !row[field]);
+      if (missingFields.length > 0) {
+        skippedStudents.push({ row, error: `Şu alanlar eksik: ${missingFields.join(', ')}` });
+        continue;
+      }
+
+      const existingStudent = await User.findOne({ studentNumber: row.studentNumber });
+
+      if (existingStudent) {
+        existingStudent.name = row.name || existingStudent.name;
+        existingStudent.lastname = row.lastname || existingStudent.lastname;
+        existingStudent.email = row.email || existingStudent.email;
+        existingStudent.rfid_id = row.rfid_id || existingStudent.rfid_id;
+        existingStudent.password = row.password || existingStudent.password;
+        await existingStudent.save();
+        updatedStudents.push(existingStudent);
+      } else {
+        try {
+          const newStudent = await User.create({
+            name: row.name,
+            lastname: row.lastname,
+            email: row.email,
+            password: row.password,
+            studentNumber: row.studentNumber,
+            rfid_id: row.rfid_id,
+            role: 'student'
+          });
+          createdStudents.push(newStudent);
+        } catch (error) {
+          skippedStudents.push({ row, error: `Öğrenci oluşturulurken hata: ${error.message}` });
+        }
+      }
+    }
+
+    res.status(200).json({
+      succeeded: true,
+      message: `İşlem tamamlandı. ${createdStudents.length} öğrenci eklendi, ${updatedStudents.length} güncellendi, ${skippedStudents.length} atlandı.`
+    });
+
+  } catch (error) {
+    console.error("Excel'den öğrenci import hatası:", error);
+    res.status(500).json({ succeeded: false, error: `Öğrenci import sırasında bir hata oluştu: ${error.message}` });
+  }
+};
+
 
 const getReports = async (req, res) => {
   try {
@@ -672,4 +762,4 @@ const getAddComputerPage = async (req, res) => {
   }
 };
 
-export { getDashboard, getReports, generateReport, createOperator, createComputer, updateComputerStatus, createCategory, createLab, endSession, createAnnouncement, getAnnouncements, getLabDetails, getLabs, getAddComputerPage, updateAnnouncement, getAnnouncement, deleteAnnouncement, getOperatorsPage, getOperatorPage, deleteOperator }; 
+export { getDashboard, getReports, generateReport, createOperator, createComputer, updateComputerStatus, createCategory, createLab, endSession, createAnnouncement, getAnnouncements, getLabDetails, getLabs, getAddComputerPage, updateAnnouncement, getAnnouncement, deleteAnnouncement, getOperatorsPage, getOperatorPage, deleteOperator, importStudentsFromExcel, getStudentsPage }; 
