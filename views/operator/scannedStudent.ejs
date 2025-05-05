@@ -1,35 +1,37 @@
 <%- include('../partials/_header') %>
-<body class="main-layout inner_posituong">
+<body class="main-layout inner_posituong" style="background-color:#1E1D42;">
   <%- include('../partials/_navbar') %>
 
-  <div class="container mt-5">
+  <div class="container mt-5" >
   
     <% if (rfid_succeeded && students.length > 0) { %>
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover shadow-lg">
+      <div class="table-responsive" >
+        <table class="table table-bordered table-hover shadow-lg" >
           <thead class="thead-light text-center">
-            <tr>
-              <th>#</th>
-              <th>Öğrenci Numarası</th>
-              <th>Ad</th>
-              <th>Soyad</th>
-              <th>Oluşturulma Tarihi</th>
+            <tr >
+              <th style="background-color: #ADD8E6">
+                <i class="fas fa-rss"></i>
+              </th>
+                            <th style="background-color: #ADD8E6">Öğrenci Numarası</th>
+              <th style="background-color: #ADD8E6">Ad</th>
+              <th style="background-color: #ADD8E6">Soyad</th>
+              <th style="background-color: #ADD8E6">Oluşturulma Tarihi</th>
             </tr>
           </thead>
-          <tbody class="text-center">
+          <tbody class="text-center" >
             <% students.forEach((student, index) => { %>
               <tr class="student-row">
-                <td><%= index + 1 %></td>
-                <td>
+                <td style="background-color: #ADD8E6"><%= index + 1 %></td>
+                <td style="background-color: #ADD8E6">
                   <%= student.studentNumber %>
                   <button class="copy-btn btn btn-sm btn-light ms-2" data-copy="<%= student.studentNumber %>">
                     <i class="fas fa-copy"></i>
                   </button>
                 </td>
                 
-                <td><%= student.name %></td>
-                <td><%= student.lastname %></td>
-                <td><%= student.createdAt.toLocaleString('tr-TR') %></td>
+                <td style="background-color: #ADD8E6"><%= student.name %></td>
+                <td style="background-color: #ADD8E6"><%= student.lastname %></td>
+                <td style="background-color: #ADD8E6"><%= student.createdAt.toLocaleString('tr-TR') %></td>
               </tr>
             <% }) %>
           </tbody>

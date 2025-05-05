@@ -1,18 +1,18 @@
 <%- include('../partials/_header') %>
-<body class="main-layout inner_posituong">
+<body class="main-layout inner_posituong" style="background-color:#1E1D42;">
     <%- include('../partials/_navbar') %>
 
     <div class="container mt-5">
         <h2>Laboratuvar Durumu</h2>
 
         <div class="card mt-4">
-            <div class="card-header bg-info text-white">
+            <div class="card-header  text-black" style="background-color: #ADD8E6">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-th"></i>
                     Laboratuvar Durumu
                 </h5>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="background-color: #ADD8E6">
                 <ul class="nav nav-tabs" id="labTabs" role="tablist">
                     <% labs.forEach((lab, index) => { %>
                         <li class="nav-item" role="presentation">
