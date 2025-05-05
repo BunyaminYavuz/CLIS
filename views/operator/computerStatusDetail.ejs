@@ -1,37 +1,109 @@
 <%- include('../partials/_header') %>
-<body class="main-layout inner_posituong bg-light">
-    <%- include('../partials/_navbar') %>
+<body class="main-layout inner_posituong" style="background-color:#1E1D42;">
+  <%- include('../partials/_navbar') %>
 
-    <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; padding: 20px;">
-        <div class="card shadow p-3" style="width: 380px; border-radius: 12px; background-color: #f8f4ff;">
-            <div class="card-header text-white text-center rounded-top" style="background-color: #6f42c1;">
-                <h5 class="mb-0"><i class="fas fa-desktop"></i> Bilgisayar Durumu</h5>
-            </div>
-            <div class="card-body text-dark" style="font-size: 0.95rem;">
-                <p><strong>Bilgisayar:</strong> <%= computer.name %></p>
-                <p><strong>Laboratuvar:</strong> <%= computer.lab.name %></p>
-                <p><strong>Durum:</strong> <%= computer.isUsed ? 'Kullanımda' : 'Müsait' %></p>
-                <p><strong>Durum Açıklaması:</strong> <%= computer.status || 'Bilinmiyor' %></p>
+  <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card shadow-lg p-4" style="max-width: 600px; width: 100%; border-radius: 20px; background-color: #ADD8E6">
+      <div class="card-header text-black text-center py-4" style="background-color: #ADD8E6"; border-top-left-radius: 20px; border-top-right-radius: 20px;>
+        <h3 class="mb-1">
+          <i class="fas fa-desktop me-2"></i>Bilgisayar Durum Paneli
+        </h3>
+        <p class="mb-0" style="font-size: 0.9rem;">Buradan bilgisayar bilgilerini görüntüleyebilir ve durumunu güncelleyebilirsiniz.</p>
+      </div>
 
-                <form action="/operator/computerStatus/update" method="POST" class="mt-3">
-                    <input type="hidden" name="computerId" value="<%= computer._id %>">
-
-                    <div class="mb-2">
-                        <label for="status" class="form-label">Bilgisayar Durumu</label>
-                        <select name="status" class="form-select" id="status">
-                            <option value="active" <%= computer.status === 'active' ? 'selected' : '' %>>Aktif</option>
-                            <option value="maintenance" <%= computer.status === 'maintenance' ? 'selected' : '' %>>Bakımda</option>
-                            <option value="broken" <%= computer.status === 'broken' ? 'selected' : '' %>>Bozuk</option>
-                        </select>
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn text-white" style="background-color: #6f42c1;">Durumu Güncelle</button>
-                    </div>
-                </form>
-            </div>
+      <div class="card-body text-dark" style="font-size: 1rem;">
+        <div class="mb-3">
+          <i class="fas fa-laptop-code me-2 text-primary"></i>
+          <strong>Bilgisayar Adı:</strong> <span class="float-end"><%= computer.name %></span>
         </div>
-    </div>
+        <div class="mb-3">
+          <i class="fas fa-network-wired me-2 text-success"></i>
+          <strong>Laboratuvar:</strong> <span class="float-end"><%= computer.lab.name %></span>
+        </div>
+        <div class="mb-3">
+          <i class="fas fa-info-circle me-2 text-warning"></i>
+          <strong>Kullanım Durumu:</strong> 
+          <span class="float-end">
+            <span class="badge <%= computer.isUsed ? 'bg-danger' : 'bg-success' %>">
+              <%= computer.isUsed ? 'Kullanımda' : 'Müsait' %>
+            </span>
+          </span>
+        </div>
+        <div class="mb-4">
+          <i class="fas fa-comment-dots me-2 text-info"></i>
+          <strong>Durum Açıklaması:</strong> <span class="float-end"><%= computer.status || 'Bilinmiyor' %></span>
+        </div>
 
-    <%- include('../partials/_footer') %>
+        <form action="/operator/computerStatus/update" method="POST">
+          <input type="hidden" name="computerId" value="<%= computer._id %>">
+          
+          <div class="dropdown mb-3">
+            <label class="form-label">
+              <i class="fas fa-cogs me-2"></i> Yeni Bilgisayar Durumu
+            </label>
+            <button class="btn w-100 text-white dropdown-toggle" 
+        type="button" 
+        id="dropdownMenuButton" 
+        data-bs-toggle="dropdown" 
+        aria-expanded="false"
+        style="background-color: #138baf;">
+  <i class="fas fa-cogs me-2"></i> Durum Seç
+</button>
+
+            <ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
+              <li>
+                <a class="dropdown-item d-flex align-items-center gap-2 status-option" href="#" onclick="selectStatus('active')">
+                  <i class="fas fa-check-circle text-success"></i> Aktif
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center gap-2 status-option" href="#" onclick="selectStatus('maintenance')">
+                  <i class="fas fa-tools text-warning"></i> Bakımda
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center gap-2 status-option" href="#" onclick="selectStatus('broken')">
+                  <i class="fas fa-times-circle text-danger"></i> Bozuk
+                </a>
+              </li>
+            </ul>
+            <input type="hidden" name="status" id="selectedStatus" value="">
+          </div>
+          
+          <script>
+            function selectStatus(value) {
+              document.getElementById('selectedStatus').value = value;
+              document.getElementById('dropdownMenuButton').innerHTML =
+                value === 'active'
+                  ? '<i class="fas fa-check-circle text-success me-2"></i> Aktif'
+                  : value === 'maintenance'
+                  ? '<i class="fas fa-tools text-warning me-2"></i> Bakımda'
+                  : '<i class="fas fa-times-circle text-danger me-2"></i> Bozuk';
+            }
+          </script>
+          
+          <style>
+            .dropdown-menu .status-option:hover {
+              background-color: #68626280;
+              color: #000000;
+            }
+          </style>
+          
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-lg text-black" style="background-color: #138baf;">
+              <i class="fas fa-save me-2"></i>Durumu Güncelle
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card-footer text-center mt-3" style="font-size: 1.1rem; background-color: #f8d7da; color: #842029;">
+        <i class="fas fa-info-circle me-1"></i> Lütfen sadece yetkili kişiler bu alanı kullanmalıdır.
+      </div>
+      
+    </div>
+  </div>
+
+  <%- include('../partials/_footer') %>
 </body>
