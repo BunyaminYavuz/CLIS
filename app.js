@@ -32,17 +32,22 @@ app.use(cookieParser());
 // routes
 app.use("*", checkUser);
 
-// Sonra role bazlı routelar
+// Role Base Access Control
 app.use("/admin", authenticateRoles("admin"), adminRoute);
 app.use("/operator", authenticateRoles("operator"), operatorRoute);
 app.use("/student", authenticateRoles("student"), studentRoute);
 
-// En son genel routelar
+// 
 app.get('/', getMainPage);
 app.use("/", pageRoute);
 app.use("/users", userRoute);
 app.use("/computers", computerRoute);
 app.use("/categories", categoryRoute);
+
+// Not found page
+app.use((req, res, next) => {
+    res.status(404).render("notFound");
+  });
 
 app.listen(port, ()=>{
     console.log(`Application is running on ${port}`);
