@@ -4,7 +4,13 @@
 
   <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="card shadow-lg p-4" style="max-width: 600px; width: 100%; border-radius: 20px; background-color: #ADD8E6">
+      <h4>
+        <a href="/operator/labStatus" class="text-decoration-none me-2">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+      </h4>
       <div class="card-header text-black text-center py-4" style="background-color: #ADD8E6"; border-top-left-radius: 20px; border-top-right-radius: 20px;>
+        
         <h3 class="mb-1">
           <i class="fas fa-desktop me-2"></i>Bilgisayar Durum Paneli
         </h3>
@@ -31,7 +37,19 @@
         </div>
         <div class="mb-4">
           <i class="fas fa-comment-dots me-2 text-info"></i>
-          <strong>Durum Açıklaması:</strong> <span class="float-end"><%= computer.status || 'Bilinmiyor' %></span>
+          <strong>Durum Açıklaması:</strong> 
+          <span class="float-end">
+              <% if (computer.status === 'maintenance') { %>
+                  Bakımda
+              <% } else if (computer.status === 'active') { %>
+                  Aktif
+              <% } else if (computer.status === 'broken') { %>
+                  Arızalı
+              <% } else { %>
+                  Bilinmiyor
+              <% } %>
+            </span>
+
         </div>
 
         <form action="/operator/computerStatus/update" method="POST">

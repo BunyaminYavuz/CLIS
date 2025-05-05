@@ -166,10 +166,15 @@
                                                                     onclick="endSession('<%= computer._id %>', '<%= student._id %>')">
                                                                 <i class="fas fa-stop-circle"></i>
                                                             </button>
-                                                        <% }} else if (computer.status !== 'active') { %>
+                                                            <% }} else if (computer.status == 'maintenance') { %>
+                                                                <span class="badge bg-warning">
+                                                                    <i class="fas fa-tools"></i>
+                                                                    Bakımda
+                                                                </span>
+                                                            <% } else if (computer.status == 'broken') { %>
                                                             <span class="badge bg-warning">
                                                                 <i class="fas fa-tools"></i>
-                                                                <%= computer.status %>
+                                                                Bozuk
                                                             </span>
                                                         <% } else { %>
                                                             <span class="badge bg-success">
