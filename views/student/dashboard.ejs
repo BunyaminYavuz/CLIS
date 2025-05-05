@@ -1,18 +1,18 @@
 <%- include('../partials/_header') %>
-<body class="main-layout inner_posituong">
+<body class="main-layout inner_posituong" style="background-color:#1E1D42;" >
   <%- include('../partials/_navbar') %>
   
   <div class="container mt-5">
-    <h2>Öğrenci Dashboard</h2>
+    <h2 class="text-white font-weight-bold display-8">Öğrenci Dashboard</h2>
     
     <!-- Active Session Information -->
     <% if (activeSession) { %>
-      <div class="card mt-4 border-primary">
+      <div class="card mt-4 " style="background-color: #ADD8E6">
         <div class="card-body">
-          <h4 class="card-title text-primary">Aktif Oturum</h4>
+          <h4 class="card-title text-black">Aktif Oturum</h4>
           <p class="card-text">
             <strong>Bilgisayar:</strong> <%= activeSession.computer.name %><br>
-            <strong>Laboratuvar:</strong> <%= activeLab.name %><br>
+            <strong>Laboratuvar:</strong> <%= activeSession.computer?.lab?.name %><br>
             <strong>Operator:</strong> <%= activeSession.operator.name %> <%= activeSession.operator.lastname %><br>
             <strong>Başlangıç:</strong> <%= formatDate(activeSession.startTime) %>
           </p>
@@ -21,42 +21,50 @@
     <% } %>
 
     <!-- Today's Sessions -->
-    <div class="card mt-4">
-      <div class="card-header bg-primary text-white">
-        <h5 class="card-title mb-0">Bugünün Oturumları</h5>
+    <div class="card mt-4" style="background-color: #ADD8E6">
+      <div class="card-header text-white">
+        <h5 class="card-title mb-0 text-black ">Bugünün Oturumları</h5>
       </div>
       <div class="card-body">
         <table class="table">
           <thead>
             <tr>
-              <th>Bilgisayar</th>
-              <th>Laboratuvar</th>
-              <th>Operator</th>
-              <th>Başlangıç</th>
-              <th>Bitiş</th>
-              <th>Süre</th>
+              <th style="background-color: #ADD8E6">Bilgisayar</th>
+              <th style="background-color: #ADD8E6">Laboratuvar</th>
+              <th style="background-color: #ADD8E6">Operator</th>
+              <th style="background-color: #ADD8E6">Başlangıç</th>
+              <th style="background-color: #ADD8E6">Bitiş</th>
+              <th style="background-color: #ADD8E6">Süre</th>
             </tr>
           </thead>
+          
           <tbody>
-            <% todaySessions.forEach(session => { %>
+            <% 
+              const activeSessions = todaySessions.filter(s => !s.endTime);
+              const finishedSessions = todaySessions.filter(s => s.endTime);
+              const sortedSessions = [...activeSessions, ...finishedSessions];
+              
+              sortedSessions.forEach(session => { 
+            %>
               <tr>
-                <td><%= session.computer?.name || 'Bilinmiyor' %></td>
-                <td><%= activeLab?.name %></td>
-                <td><%= session.operator.name %> <%= session.operator.lastname %></td>
-                <td><%= formatDate(session.startTime) %></td>
-                <td><i class="fas fa-spinner fa-spin"></i><%= session.endTime ? formatDate(session.endTime) : 'Devam Ediyor' %></td>
-                <td>
-                  <i class="fas fa-spinner fa-spin"></i>
-                  <%= session.endTime ? formatDuration(new Date(session.endTime) - new Date(session.startTime)) : 'Devam Ediyor' %>
+                <td style="background-color: #ADD8E6"><%= session.computer?.name || 'Bilinmiyor' %></td>
+                <td style="background-color: #ADD8E6"><%= session.computer?.lab?.name || 'Bilinmiyor' %></td>
+                <td style="background-color: #ADD8E6"><%= session.operator?.name %> <%= session.operator?.lastname %></td>
+                <td style="background-color: #ADD8E6"><%= formatTime(session.startTime) %></td>
+                <td style="background-color: #ADD8E6"><%= session.endTime ? formatTime(session.endTime) : 'Devam ediyor' %></td>
+                <td style="background-color: #ADD8E6">
+                  <% if (!session.endTime) { %>
+                    <i class="fas fa-hourglass-half text-warning"></i>
+                  <% } else { %>
+                    <i class="fas fa-stopwatch text-success"></i>
+                  <% } %>
+                  <%= formatDuration(new Date(session.endTime || new Date()) - new Date(session.startTime)) %>
                 </td>
               </tr>
             <% }) %>
-            <% if (todaySessions.length === 0) { %>
-              <tr>
-                <td colspan="5" class="text-center text-muted">Bugün henüz oturum kaydı bulunmuyor.</td>
-              </tr>
-            <% } %>
           </tbody>
+          
+
         </table>
       </div>
     </div>
