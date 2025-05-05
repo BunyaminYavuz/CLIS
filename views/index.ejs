@@ -29,10 +29,21 @@
               <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
                 <div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
                   <div class="announcement-card text-center shadow-lg p-5 animated fadeInUp">
+                    
                     <h3 class="announcement-title"><%= announcement.title %></h3>
+                    <h6 style="color: aliceblue;">
+                      <%= new Date(announcement.createdAt).toLocaleDateString('tr-TR', { 
+                        weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' 
+                      }) %> - 
+                      <%= new Date(announcement.createdAt).toLocaleTimeString('tr-TR', { 
+                        hour: '2-digit', minute: '2-digit' 
+                      }) %>
+                    </h6>
+                    
+                    
                     <p class="announcement-content short-text" id="content-<%= index %>">
                       <%= announcement.content.length > 300 ? announcement.content.substring(0, 300) + "..." : announcement.content %>
-                    </p>
+                    </p>                   
                     <% if (announcement.content.length > 300) { %>
                         <button class="btn btn-outline-light custom-readmore-btn mt-2" onclick="toggleFullText(<%= index %>, `<%- announcement.content.replace(/`/g, '\\`') %>`)">Devamını Oku</button>
                       <% } %>                      
