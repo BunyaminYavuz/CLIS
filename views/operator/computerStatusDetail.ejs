@@ -1,0 +1,37 @@
+<%- include('../partials/_header') %>
+<body class="main-layout inner_posituong bg-light">
+    <%- include('../partials/_navbar') %>
+
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; padding: 20px;">
+        <div class="card shadow p-3" style="width: 380px; border-radius: 12px; background-color: #f8f4ff;">
+            <div class="card-header text-white text-center rounded-top" style="background-color: #6f42c1;">
+                <h5 class="mb-0"><i class="fas fa-desktop"></i> Bilgisayar Durumu</h5>
+            </div>
+            <div class="card-body text-dark" style="font-size: 0.95rem;">
+                <p><strong>Bilgisayar:</strong> <%= computer.name %></p>
+                <p><strong>Laboratuvar:</strong> <%= computer.lab.name %></p>
+                <p><strong>Durum:</strong> <%= computer.isUsed ? 'Kullanımda' : 'Müsait' %></p>
+                <p><strong>Durum Açıklaması:</strong> <%= computer.status || 'Bilinmiyor' %></p>
+
+                <form action="/operator/computerStatus/update" method="POST" class="mt-3">
+                    <input type="hidden" name="computerId" value="<%= computer._id %>">
+
+                    <div class="mb-2">
+                        <label for="status" class="form-label">Bilgisayar Durumu</label>
+                        <select name="status" class="form-select" id="status">
+                            <option value="active" <%= computer.status === 'active' ? 'selected' : '' %>>Aktif</option>
+                            <option value="maintenance" <%= computer.status === 'maintenance' ? 'selected' : '' %>>Bakımda</option>
+                            <option value="broken" <%= computer.status === 'broken' ? 'selected' : '' %>>Bozuk</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn text-white" style="background-color: #6f42c1;">Durumu Güncelle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/_footer') %>
+</body>

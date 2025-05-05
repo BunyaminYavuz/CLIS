@@ -238,4 +238,53 @@ const toggleLabStatus = async (req, res) => {
 };
 
 
-export { getDashboard, assignComputer, endSession, getComputersByLab, toggleLabStatus, scannedStudent, getLabStatus }; 
+const getComputerStatusPage = async (req, res) => {
+  try {
+    const computerId = req.params.id;  
+    const computer = await Computer.findById(computerId).populate('lab');
+    
+    if (!computer) {
+      return res.status(404).json({ succeeded: false, message: "Bilgisayar bulunamadı" });
+    }
+
+    res.render('operator/computerStatusDetail', {
+      link: 'operator-computerStatus',
+      computer
+    });
+  } catch (error) {
+    console.error("Bilgisayar durumu sayfası hatası:", error);
+    res.status(500).json({
+      succeeded: false,
+      error: "Bilgisayar durumu getirilirken bir hata oluştu"
+    });
+  }
+};
+
+
+
+const updateComputerStatus = async (req, res) => {
+  try {
+    const { computerId, status } = req.body;  
+
+    const computer = await Computer.findByIdAndUpdate(computerId, 
+      { status },  
+      { new: true }
+    );
+
+    if (!computer) {
+      return res.status(404).json({ succeeded: false, message: "Bilgisayar bulunamadı" });
+    }
+
+    res.redirect(`/operator/computerStatus/${computer._id}`);
+  } catch (error) {
+    console.error("Bilgisayar durumu güncelleme hatası:", error);
+    res.status(500).json({
+      succeeded: false,
+      error: "Bilgisayar durumu güncellenirken bir hata oluştu"
+    });
+  }
+};
+
+
+
+export { getDashboard, assignComputer, endSession, getComputersByLab, toggleLabStatus, scannedStudent, getLabStatus, getComputerStatusPage, updateComputerStatus }; 
