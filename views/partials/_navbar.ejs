@@ -1,6 +1,5 @@
 <!-- header -->
 <header>
-  <!-- header inner -->
   <div class="header">
     <div class="container-fluid">
       <div class="row">
@@ -22,64 +21,56 @@
               <ul class="navbar-nav mr-auto">
                 <% if (user) { %>
                   <% if (user.role === 'admin') { %>
-                    <li class="nav-item <%= link === 'index' ? 'active' : '' %>">
-                      <a class="nav-link" href="/">Anasayfa</a>
-                    </li>
+                   
                     <li class="nav-item <%= link === 'admin-dashboard' ? 'active' : '' %>">
-                      <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+                      <a class="nav-link" href="/admin/dashboard"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
                     </li>
                     <li class="nav-item <%= link === 'admin-operators' ? 'active' : '' %>">
-                      <a class="nav-link" href="/admin/operators">Operatörler</a>
+                      <a class="nav-link" href="/admin/operators"><i class="fas fa-user-cog mr-2"></i>Operatörler</a>
                     </li>
                     <li class="nav-item <%= link === 'admin-students' ? 'active' : '' %>">
-                      <a class="nav-link" href="/admin/students">Öğrenciler</a>
+                      <a class="nav-link" href="/admin/students"><i class="fas fa-user-graduate mr-2"></i>Öğrenciler</a>
                     </li>
                     <li class="nav-item <%= link === 'admin-reports' ? 'active' : '' %>">
-                      <a class="nav-link" href="/admin/reports">Raporlar</a>
+                      <a class="nav-link" href="/admin/reports"><i class="fas fa-chart-line mr-2"></i>Raporlar</a>
                     </li>
                     <li class="nav-item <%= link === 'admin-announcements' ? 'active' : '' %>">
-                      <a class="nav-link" href="/admin/announcements">Duyurular</a>
+                      <a class="nav-link" href="/admin/announcements"><i class="fas fa-bullhorn mr-2"></i>Duyurular</a>
                     </li>
                     <li class="nav-item <%= link === 'admin-lab-details' ? 'active' : '' %>">
-                      <a class="nav-link" href="/admin/labs">Laboratuvar Detayları</a>
+                      <a class="nav-link" href="/admin/labs"><i class="fas fa-microscope mr-2"></i>Laboratuvar Detayları</a>
                     </li>
                   <% } else if (user.role === 'operator') { %>
                     <li class="nav-item <%= link === 'operator-dashboard' ? 'active' : '' %>">
-                      <a class="nav-link" href="/operator/dashboard">Bilgisayar Yönetimi</a>
+                      <a class="nav-link" href="/operator/dashboard"><i class="fas fa-desktop mr-2"></i>Bilgisayar Yönetimi</a>
                     </li>
                     <li class="nav-item <%= link === 'operator-scannedStudent' ? 'active' : '' %>">
-                      <a class="nav-link" href="/operator/scannedStudent">Öğrenci İşlemleri</a>
+                      <a class="nav-link" href="/operator/scannedStudent"><i class="fas fa-user-check mr-2"></i>Öğrenci İşlemleri</a>
                     </li>
                     <li class="nav-item <%= link === 'operator-labStatus' ? 'active' : '' %>">
-                      <a class="nav-link" href="/operator/labStatus">Lab Durumları</a>
+                      <a class="nav-link" href="/operator/labStatus"><i class="fas fa-server mr-2"></i>Lab Durumları</a>
                     </li>
                   <% } else if (user.role === 'student') { %>
-                    <li class="nav-item <%= link === 'index' ? 'active' : '' %>">
-                      <a class="nav-link" href="/">Anasayfa</a>
-                    </li>
+                    
                     <li class="nav-item <%= link === 'student-dashboard' ? 'active' : '' %>">
-                      <a class="nav-link" href="/student/dashboard">Günlük Kullanım</a>
+                      <a class="nav-link" href="/student/dashboard"><i class="fas fa-calendar-day mr-2"></i>Günlük Kullanım</a>
                     </li>
                     <li class="nav-item <%= link === 'lab-history' ? 'active' : '' %>">
-                      <a class="nav-link" href="/student/lab-history">Kullanım Geçmişi</a>
+                      <a class="nav-link" href="/student/lab-history"><i class="fas fa-history mr-2"></i>Kullanım Geçmişi</a>
                     </li>
                     <li class="nav-item <%= link === 'lab-computer-status' ? 'active' : '' %>">
-                      <a class="nav-link" href="/student/lab-computer-status">Laboratuvar Bilgisayar Durumları</a>
+                      <a class="nav-link" href="/student/lab-computer-status"><i class="fas fa-network-wired mr-2"></i>Laboratuvar Bilgisayar Durumları</a>
                     </li>
                   <% } %>
                   <li class="nav-item">
-                    <a class="nav-link" href="/logout">Çıkış Yap</a>
+                    <a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt mr-2"></i>Çıkış Yap</a>
                   </li>
                 <% } else { %>
                   <li class="nav-item">
-                    <a class="nav-link nav-link-icon" href="/login">
-                      <i class="fas fa-sign-in-alt mr-2"></i> Giriş Yap
-                    </a>
+                    <a class="nav-link nav-link-icon" href="/login"><i class="fas fa-sign-in-alt mr-2"></i>Giriş Yap</a>
                   </li>
                   <!-- <li class="nav-item">
-                    <a class="nav-link nav-link-icon" href="/register">
-                      <i class="fas fa-user-plus mr-2"></i> Kayıt Ol
-                    </a>
+                    <a class="nav-link nav-link-icon" href="/register"><i class="fas fa-user-plus mr-2"></i>Kayıt Ol</a>
                   </li> -->
                 <% } %>
               </ul>
