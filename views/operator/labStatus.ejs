@@ -143,9 +143,14 @@
                                     <div class="col-md-3 mb-3">
                                         <div class="card <%= lab.isOpen ? (computer.isUsed ? 'border-danger' : computer.status !== 'active' ? 'border-warning' : 'border-success') : 'border-secondary' %>">
                                             <div class="card-body">
-                                                <h5 class="card-title">
-                                                    <i class="fas fa-desktop"></i>
-                                                    <%= computer.name %>
+                                                <h5 class="card-title d-flex justify-content-between align-items-center">
+                                                    <span>
+                                                        <i class="fas fa-desktop"></i>
+                                                        <%= computer.name %>
+                                                    </span>
+                                                    <a href="/operator/computerStatus/<%= computer._id %>" class="text-dark" title="Detaylara git">
+                                                        <i class="fas fa-arrow-right"></i>
+                                                    </a>
                                                 </h5>
                                                 <p class="card-text">
                                                     <% if (lab.isOpen) { %>
@@ -179,7 +184,7 @@
                                                         </span>
                                                     <% } %>
                                                 </p>
-                                            </div>
+                                            </div>                                           
                                         </div>
                                     </div>
                                 <% }); %>
