@@ -49,7 +49,14 @@ function calculateTodayUsage(sessions) {
 const getStudentDashboard = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
-      .populate('labUsageHistory.computer')
+
+      .populate({
+        path:'labUsageHistory.computer',
+        populate: {
+          path: 'lab'
+        }
+      })
+
       .populate('labUsageHistory.operator');
 
     const labs = await Lab.find(); // Tüm lablar
