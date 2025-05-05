@@ -1,5 +1,8 @@
 import express from "express";
 import * as adminController from "../controllers/adminController.js";
+import multer from 'multer';
+const storage = multer.memoryStorage(); 
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
@@ -8,6 +11,10 @@ router.get("/reports", adminController.getReports);
 router.get("/labs", adminController.getLabs);
 router.get("/labs/:id", adminController.getLabDetails);
 router.post("/generate-report", adminController.generateReport);
+
+// Students routes
+router.get("/students", adminController.getStudentsPage);
+router.post('/import-students', upload.single('excelFile'), adminController.importStudentsFromExcel);
 
 // Operator routes
 router.get("/operators", adminController.getOperatorsPage);

@@ -1,0 +1,167 @@
+<%- include('../partials/_header') %>
+<body class="main-layout inner_posituong">
+    <%- include('../partials/_navbar') %>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card rounded-4 border-0">
+                    <div class="card-header rounded-top-4 p-4 shadow">
+                        <h5 class="mb-0"><i class="fas fa-file-excel me-2"></i> Excel'den Öğrenci Yükle</h5>
+                    </div>
+                    <div class="card-body p-5">
+                        <p class="card-text text-muted mb-4">
+                            <i class="fas fa-info-circle me-1"></i> Excel dosyasından öğrenci bilgilerini toplu olarak sisteme aktarabilirsiniz. Lütfen dosyanızın doğru formatta olduğundan emin olun ve
+                            <strong>Ad, Soyad, E-posta, Öğrenci Numarası, RFID ID ve Şifre</strong> bilgilerinin eksiksiz olduğundan emin olun.
+                        </p>
+
+                        <form id="importForm" action="/admin/import-students" method="POST" enctype="multipart/form-data">
+                            <div class="mb-4">
+                                <label for="excelFile" class="form-label fw-bold"><i class="fas fa-upload me-1"></i> Excel Dosyası Seçin</label>
+                                <input class="form-control rounded-pill py-3 px-4" type="file" id="excelFile" name="excelFile" accept=".xlsx,.csv" required>
+                            </div>
+
+                            <div class="mb-4 form-check">
+                                <input type="checkbox" class="form-check-input" id="deleteMissingStudents" name="deleteMissingStudents" value="true">
+                                <label class="form-check-label" for="deleteMissingStudents">
+                                    Veritabanında olup Excel'de olmayan öğrencileri sil
+                                </label>
+                                <small class="text-muted d-block mt-2">
+                                    Dikkat: Bu seçeneği işaretlerseniz, Excel dosyasında bulunmayan tüm öğrenciler sistemden silinecektir.
+                                </small>
+                            </div>
+
+                            <button type="submit" class="btn btn-success rounded-pill w-100 py-3 shadow">
+                                <i class="fas fa-upload me-2"></i> Yükle ve Kaydet
+                            </button>
+                        </form>
+
+                        <div id="importResult" class="mt-4">
+                            <!-- Success/Error message will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/_footer') %>
+    <head>
+        <style>
+            body {
+                background: linear-gradient(135deg, #5f4b8b, #7c5db3);
+                color: white;
+            }
+    
+            .card {
+                background-color: #6a50a7;
+                color: white;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            }
+    
+            .card-header {
+                background-color: #5a429d !important;
+                color: white;
+                border-bottom: none;
+            }
+    
+            .form-label,
+            .form-check-label,
+            .card-text {
+                color: #f1f1f1;
+            }
+    
+            .form-control {
+                background-color: #f9f9f9;
+                border: none;
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+    
+            .form-control:focus {
+                border-color: #6f42c1;
+                box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25);
+            }
+    
+            .form-check-input {
+                border-color: #ddd;
+            }
+    
+            .btn-success {
+                background-color: #8e44ad;
+                border: none;
+                color: white;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+    
+            .btn-success:hover {
+                background-color: #732d91;
+            }
+    
+            .btn-close {
+                filter: invert(1);
+            }
+    
+            .alert {
+                color: white;
+            }
+    
+            .alert-success {
+                background-color: #28a745;
+                border-color: #28a745;
+            }
+    
+            .alert-danger {
+                background-color: #dc3545;
+                border-color: #dc3545;
+            }
+        </style>
+    </head>
+    
+
+    <script>
+        const importForm = document.getElementById('importForm');
+        const importResultDiv = document.getElementById('importResult');
+
+        importForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(importForm);
+
+            try {
+                const response = await fetch('/admin/import-students', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.succeeded) {
+                    importResultDiv.innerHTML = `
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i> ${result.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
+                } else {
+                    importResultDiv.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i> Öğrenci import sırasında bir hata oluştu: ${result.error || 'Bilinmeyen bir hata.'}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error("Frontend import hatası:", error);
+                importResultDiv.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i> Frontend tarafında bir hata oluştu.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+            } finally {
+                importForm.reset();
+            }
+        });
+    </script>
+</body>
