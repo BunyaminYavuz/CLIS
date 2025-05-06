@@ -1,40 +1,43 @@
 <%- include('../partials/_header') %>
-<body class="main-layout inner_posituong">
+<body class="main-layout inner_posituong" style="background-color:#1E1D42;">
     <%- include('../partials/_navbar') %>
 
     <div class="container mt-5">
-        <h2 class="mb-4"><%= lab.name %> Detayları</h2>
+        <h2 class="mb-4" style="color: white;"  ><%= lab.name %> Detayları</h2>
 
-        <div class="card mb-4">
+        <div class="card mb-4" style="background-color: #ADD8E6">
             <div class="card-header">
-                <h5 class="card-title">Laboratuvar Bilgileri</h5>
+                <h5 class="card-title"><i class="fas fa-flask me-2"></i> Laboratuvar Bilgileri</h5>
             </div>
             <div class="card-body">
-                <p><strong>Açıklama:</strong> <%= lab.description %></p>
-                <p><strong>Kapasite:</strong> <%= lab.capacity %></p>
-                <p><strong>Durum:</strong> <%= lab.isOpen ? 'Açık' : 'Kapalı' %></p>
+                <p><i class="fas fa-info-circle me-2"></i> <strong>Açıklama:</strong> <%= lab.description %></p>
+                <p><i class="fas fa-cubes me-2"></i> <strong>Kapasite:</strong> <%= lab.capacity %></p>
+                <p>
+                    <i class="fas fa-door-<%= lab.isOpen ? 'open' : 'closed' %> me-2"></i>
+                    <strong>Durum:</strong> <%= lab.isOpen ? 'Açık' : 'Kapalı' %>
+                </p>
                 <% if (lab.isOpen) { %>
-                    <p><strong>Kapanma Saati:</strong> <%= lab.closingTime || 'Belirtilmemiş' %></p>
+                    <p><i class="far fa-clock me-2"></i> <strong>Kapanma Saati:</strong> <%= lab.closingTime || 'Belirtilmemiş' %></p>
                 <% } %>
             </div>
         </div>
 
-        <h3 class="mb-3">Bilgisayarlar</h3>
+        <h3 class="mb-3" style="color: white;">Bilgisayarlar</h3>
         <table class="table">
             <thead>
                 <tr>
-                    <th>Bilgisayar Adı</th>
-                    <th>Aktiflik Durumu</th>
-                    <th>Laboratuvar Adı</th>
+                    <th style="background-color: #ADD8E6">Bilgisayar Adı</th>
+                    <th style="background-color: #ADD8E6">Aktiflik Durumu</th>
+                    <th style="background-color: #ADD8E6">Laboratuvar Adı</th>
                 </tr>
             </thead>
             <tbody>
                 <% computers.forEach(computer => { %>
                     <tr>
-                        <td>
+                        <td style="background-color: #ADD8E6">
                             <i class="fas fa-desktop"></i> <%= computer.name %>
                         </td>
-                        <td>
+                        <td style="background-color: #ADD8E6">
                             <% if (!lab.isOpen) { %>
                               <span class="badge bg-secondary">Kapalı</span>
                             <% } else if (computer.status === 'maintenance') { %>
@@ -48,7 +51,7 @@
                             <% } %>
                           </td>
                           
-                        <td>
+                        <td style="background-color: #ADD8E6">
                             <%= lab.name %>
                         </td>
                     </tr>
