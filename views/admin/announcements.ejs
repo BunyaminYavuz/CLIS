@@ -1,9 +1,9 @@
 <%- include('../partials/_header') %>
-<body class="main-layout inner_posituong">
+<body class="main-layout inner_posituong" style="background-color:#1E1D42;">
   <%- include('../partials/_navbar') %>
 
   <div class="container mt-5">
-    <h2 class="mb-4"><i class="fas fa-bullhorn"></i> Duyurular</h2>
+    <h2 style="color: white;" class="mb-4"><i class="fas fa-bullhorn"></i> Duyurular</h2>
 
     <!-- ✅ Modal Butonu -->
     <div class="btn-group mb-3">
@@ -13,15 +13,15 @@
     </div>
 
     <% if (announcements.length > 0) { %>
-      <div class="list-group">
+      <div class="list-group" >
         <% announcements.forEach(announcement => { %>
-          <div class="card mb-3 shadow-sm">
+          <div class="card mb-3 shadow-sm" style="background-color: #ADD8E6">
             <div class="card-header d-flex justify-content-between align-items-center">
               <h5 class="card-title mb-0">
                 <i class="fas fa-newspaper"></i> <%= announcement.title %>
               </h5>
               <div>
-                <a href="/admin/announcements/update/<%= announcement._id %>" class="btn btn-sm btn-warning">
+                <a href="/admin/announcements/update/<%= announcement._id %>" class="btn btn-sm btn-success">
                   <i class="fas fa-edit"></i> Güncelle
                 </a>
                 <form action="/admin/announcements/delete/<%= announcement._id %>" method="POST" class="d-inline">

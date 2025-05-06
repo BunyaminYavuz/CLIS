@@ -1,12 +1,12 @@
 <%- include('../partials/_header') %>
-<body class="main-layout inner_posituong">
+<body class="main-layout inner_posituong" style="background-color:#1E1D42;">
     <%- include('../partials/_navbar') %>
 
     <div class="container mt-5">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center" >
             <div class="col-md-8">
-                <div class="card shadow-lg rounded-4 border-0">
-                    <div class="card-header bg-primary text-white rounded-top-4 p-3">
+                <div class="card shadow-lg rounded-4 border-0" style="background-color: #ADD8E6">
+                    <div class="card-header  text-black rounded-top-4 p-3">
                         <h5 class="mb-0"><i class="fas fa-user-cog me-2"></i> Operatör Detayları</h5>
                     </div>
                     <div class="card-body p-4">
@@ -34,7 +34,7 @@
                         <hr class="my-4">
 
                         <div class="d-flex justify-content-between align-items-center">
-                            <a href="/admin/operators" class="btn btn-outline-secondary rounded-pill">
+                            <a href="/admin/operators" class="btn btn-outline rounded-pill" style="background-color: #5398ad">
                                 <i class="fas fa-arrow-left me-1"></i> Operatör Listesine Dön
                             </a>
                             <form action="/admin/operators/delete/<%= operator._id %>" method="POST" class="d-inline">
@@ -47,14 +47,14 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>  
 
     <%- include('../partials/_footer') %>
 
     <style>
         .form-label {
             margin-bottom: 0.3rem;
-            color: #555;
+            color: #1d62a3;
         }
     </style>
 </body>
