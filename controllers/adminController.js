@@ -37,6 +37,7 @@ const getDashboard = async (req, res) => {
           },
           computer: {
             name: computer?.name || 'Bilinmiyor',
+            lab: computer?.lab,
             category: {
               name: computer?.lab?.name || 'Bilinmiyor'
             }

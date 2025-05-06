@@ -155,8 +155,8 @@
                           </div>
                         </div>
                       </td>
-                      <td><%= session.computer.name.match(/\d+$/)?.[0] || 'Bilinmiyor' %></td>
-                      <td><%= session.computer.name %></td>
+                      <td><%= session.computer?.lab?.name || 'Bilinmiyor' %></td>
+                      <td><%= session.computer?.name %></td>
                       <td><%= formatTime(session.startTime) %></td>
                       <td id="duration-<%= session._id %>">
                         <script>
