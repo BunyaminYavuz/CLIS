@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import Computer from "../models/computerModel.js";
 import ScannedStudent from "../models/scannedStudent.js";
 import Lab from "../models/labModel.js";
+import Program from "../models/programModel.js";
 
 const getDashboard = async (req, res) => {
   try {
@@ -285,6 +286,98 @@ const updateComputerStatus = async (req, res) => {
   }
 };
 
+const getPrograms = async (req, res) => {
+  try {
+    const labs = await Lab.find();
+    const programs = await Program.find().populate(['lab', 'operator']);
+
+    const bookedSlots = {};
+    programs.forEach(program => {
+      const key = `${program.lab._id}-${program.day}-${program.hour}`;
+      bookedSlots[key] = {
+        operatorName: program.operator ? program.operator.name : 'Bilinmiyor',
+        labName: program.lab ? program.lab.name : 'Bilinmiyor',
+        operatorId: program.operator?._id?.toString(),
+      };
+    });
+
+    res.render("operator/program", {
+      link: 'operator-program',
+      labs: labs,
+      bookedSlots: bookedSlots,
+      user: req.user, // kullanıcının bilgileri
+    });
+  } catch (error) {
+    console.error("Program sayfası getirilirken hata:", error);
+    res.status(500).json({
+      succeeded: false,
+      error: "Program sayfası yüklenirken bir hata oluştu.",
+    });
+  }
+};
 
 
-export { getDashboard, assignComputer, endSession, getComputersByLab, toggleLabStatus, scannedStudent, getLabStatus, getComputerStatusPage, updateComputerStatus }; 
+const updateProgramSlot = async (req, res) => {
+  try {
+    const { day, hour, labId } = req.body;
+    const operatorId = req.user._id;
+    const lab = await Lab.findById(labId); // Lab adını almak için
+
+    if (!lab) {
+      return res.status(404).json({ succeeded: false, error: "Laboratuvar bulunamadı." });
+    }
+
+    // Aynı lab, gün ve saat için zaten bir program var mı kontrol et
+    const existingProgram = await Program.findOne({ lab: labId, day: day, hour: hour });
+
+    if (existingProgram) {
+      return res.status(409).json({ // 409 Conflict
+        succeeded: false,
+        error: "Bu zaman dilimi zaten başka bir operatör tarafından seçilmiş.",
+      });
+    }
+
+    const newProgram = await Program.create({
+      operator: operatorId,
+      lab: labId,
+      labName: lab.name, // Lab adını da kaydet
+      day: day,
+      hour: hour,
+    });
+
+    res.status(201).json({
+      succeeded: true,
+      message: "Program başarıyla oluşturuldu.",
+      data: newProgram,
+    });
+
+  } catch (error) {
+    console.error("Program slot oluşturma hatası:", error);
+    res.status(500).json({
+      succeeded: false,
+      error: "Program slotu oluşturulurken bir hata oluştu: " + error.message,
+    });
+  }
+};
+
+const deleteProgramSlot = async (req, res) => {
+  try {
+    const { day, hour, labId } = req.body;
+    const operatorId = req.user._id;
+
+    const program = await Program.findOne({ lab: labId, day, hour, operator: operatorId });
+
+    if (!program) {
+      return res.status(404).json({ succeeded: false, error: "Silinecek program bulunamadı veya size ait değil." });
+    }
+
+    await program.deleteOne();
+
+    res.json({ succeeded: true, message: "Program başarıyla silindi." });
+  } catch (error) {
+    console.error("Program silme hatası:", error);
+    res.status(500).json({ succeeded: false, error: "Program silinirken bir hata oluştu." });
+  }
+};
+
+export { getDashboard, assignComputer, endSession, getComputersByLab, toggleLabStatus, scannedStudent, getLabStatus, getComputerStatusPage, getPrograms,updateComputerStatus, updateProgramSlot, deleteProgramSlot }; 

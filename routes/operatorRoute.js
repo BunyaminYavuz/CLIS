@@ -20,5 +20,10 @@ router.get("/scannedStudent", operatorController.scannedStudent);
 router.get('/computerStatus/:id', operatorController.getComputerStatusPage);
 router.post('/computerStatus/update', operatorController.updateComputerStatus);
 
+// Operator Week Proggram
+router.get("/program", operatorController.getPrograms);
+router.post("/program/update-slot", operatorController.updateProgramSlot);
+router.post('/program/delete-slot', operatorController.deleteProgramSlot);
+
 
 export default router; 
