@@ -1,0 +1,206 @@
+<%- include('../partials/_header') %>
+
+<body class="main-layout inner_posituong" style="background-color:#1E1D42;">
+  <%- include('../partials/_navbar') %>
+  
+  <div class="d-flex justify-content-center gap-4 my-4 flex-wrap">
+    <div class="d-flex align-items-center gap-2">
+      <div style="width: 20px; height: 20px; background-color: #198754; border-radius: 4px;"></div>
+      <span class="text-white fw-semibold">Boş Saat</span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <div style="width: 20px; height: 20px; background-color: #ffc107; border-radius: 4px;"></div>
+      <span class="text-white fw-semibold">Size Ait Kayıt</span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <div style="width: 20px; height: 20px; background-color: #dc3545; border-radius: 4px;"></div>
+      <span class="text-white fw-semibold">Başka Operatör</span>
+    </div>
+  </div>
+  
+
+  <div class="container mt-5 mb-5">
+    <h2 class="text-center fw-bold text-white">📅 Operatör Haftalık Program</h2>
+
+    <div class="mb-3">
+      <label for="labSelect" class="form-label text-white">Laboratuvar Seçin:</label>
+      <select class="form-select" id="labSelect">
+        <option value="" selected>Bir laboratuvar seçin</option>
+        <% labs.forEach(lab => { %>
+          <option value="<%= lab._id %>"><%= lab.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="table-responsive mt-4">
+      <table class="table table-bordered text-center bg-white">
+        <thead class="table-dark">
+          <tr>
+            <th>Saat / Gün</th>
+            <% const days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma']; %>
+            <% days.forEach(day => { %>
+              <th><%= day %></th>
+            <% }) %>
+          </tr>
+        </thead>
+        <tbody>
+          <% const hours = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']; %>
+          <% hours.forEach(hour => { %>
+            <tr>
+              <th class="table-dark"><%= hour %></th>
+              <% days.forEach(day => { %>
+                <td class="time-slot"
+                    data-day="<%= day %>"
+                    data-hour="<%= hour %>">
+                  Boş
+                </td>
+              <% }) %>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <%- include('../partials/_footer') %>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const labSelect = document.getElementById('labSelect');
+      const timeSlots = document.querySelectorAll(".time-slot");
+
+      const bookedSlots = <%- JSON.stringify(bookedSlots) %>;
+      const loggedInUserName = "<%= user.name %>";
+      const loggedInUserId = "<%= user._id %>";
+
+      function renderSlots() {
+        const selectedLabId = labSelect.value;
+
+        timeSlots.forEach(slot => {
+          const day = slot.dataset.day;
+          const hour = slot.dataset.hour;
+
+          let booking;
+          const key = `${selectedLabId}-${day}-${hour}`;
+
+          if (selectedLabId) {
+            booking = bookedSlots[key];
+          } else {
+            const matchingKeys = Object.keys(bookedSlots).filter(key => key.endsWith(`-${day}-${hour}`));
+            if (matchingKeys.length > 0) {
+              booking = bookedSlots[matchingKeys[0]];
+            }
+          }
+
+          if (booking) {
+            const isCurrentUser = booking.operatorId === loggedInUserId;
+            slot.textContent = booking.operatorName;
+            slot.className = 'time-slot ' + (isCurrentUser ? 'bg-warning text-dark fw-semibold' : 'bg-danger text-white fw-semibold');
+            slot.style.cursor = isCurrentUser ? 'pointer' : 'not-allowed';
+            slot.dataset.booked = "true";
+          } else {
+            slot.textContent = "Boş";
+            slot.className = 'time-slot bg-success text-white fw-semibold';
+            slot.style.cursor = 'pointer';
+            delete slot.dataset.booked;
+          }
+        });
+      }
+
+      function attachClickHandlers() {
+        timeSlots.forEach(slot => {
+          slot.onclick = function () {
+            const selectedLabId = labSelect.value;
+            const day = this.dataset.day;
+            const hour = this.dataset.hour;
+            const key = `${selectedLabId}-${day}-${hour}`;
+            const isBooked = this.dataset.booked === "true";
+            const booking = bookedSlots[key];
+
+            if (!selectedLabId) {
+              alert("Lütfen önce bir laboratuvar seçin!");
+              return;
+            }
+
+            if (isBooked) {
+              if (booking?.operatorId === loggedInUserId) {
+                if (confirm("Bu programı silmek istediğinize emin misiniz?")) {
+                  fetch('/operator/program/delete-slot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ day, hour, labId: selectedLabId })
+                  })
+                  .then(res => res.json())
+                  .then(data => {
+                    if (data.succeeded) {
+                      delete bookedSlots[key];
+                      renderSlots();
+                      attachClickHandlers();
+                    } else {
+                      alert(data.error || "Silme işlemi başarısız.");
+                    }
+                  })
+                  .catch(err => {
+                    console.error(err);
+                    alert("Silme sırasında hata oluştu.");
+                  });
+                }
+              } else {
+                alert("Bu zaman dilimi başka bir operatöre ait.");
+              }
+              return;
+            }
+
+            // ⚠️ Yeni kontrol: Operatör aynı saat ve günde başka bir labda var mı?
+            const operatorHasOtherBooking = Object.entries(bookedSlots).some(([otherKey, value]) => {
+              const [otherLabId, otherDay, otherHour] = otherKey.split('-');
+              return (
+                otherLabId !== selectedLabId &&
+                otherDay === day &&
+                otherHour === hour &&
+                value.operatorId === loggedInUserId
+              );
+            });
+
+            if (operatorHasOtherBooking) {
+              alert("Aynı gün ve saatte başka bir laboratuvarda programınız var.");
+              return;
+            }
+
+            // Boş alana tıklanırsa kayıt yap
+            fetch('/operator/program/update-slot', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ day, hour, labId: selectedLabId })
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.succeeded) {
+                bookedSlots[key] = {
+                  operatorName: loggedInUserName,
+                  operatorId: loggedInUserId
+                };
+                renderSlots();
+                attachClickHandlers();
+              } else {
+                alert(data.error || "Hata oluştu.");
+              }
+            })
+            .catch(err => {
+              console.error(err);
+              alert("Sunucuya bağlanırken hata oluştu.");
+            });
+          };
+        });
+      }
+
+      labSelect.addEventListener('change', () => {
+        renderSlots();
+        attachClickHandlers();
+      });
+
+      renderSlots();
+      attachClickHandlers();
+    });
+  </script>
+</body>

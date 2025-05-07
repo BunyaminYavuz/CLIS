@@ -50,6 +50,9 @@
                     <li class="nav-item <%= link === 'operator-labStatus' ? 'active' : '' %>">
                       <a class="nav-link" href="/operator/labStatus"><i class="fas fa-server mr-2"></i>Lab Durumları</a>
                     </li>
+                    <li class="nav-item <%= link === 'operator-program' ? 'active' : '' %>">
+                      <a class="nav-link" href="/operator/program"><i class="fas fa-calendar-alt mr-2"></i>Operatör Programı</a>
+                    </li>
                   <% } else if (user.role === 'student') { %>
                     
                     <li class="nav-item <%= link === 'student-dashboard' ? 'active' : '' %>">
