@@ -37,34 +37,41 @@
               <th style="background-color: #ADD8E6">Süre</th>
             </tr>
           </thead>
-          
-          <tbody>
-            <% 
-              const activeSessions = todaySessions.filter(s => !s.endTime);
-              const finishedSessions = todaySessions.filter(s => s.endTime);
-              const sortedSessions = [...activeSessions, ...finishedSessions];
-              
-              sortedSessions.forEach(session => { 
-            %>
+          <% if(todaySessions && todaySessions.length > 0) { %>
+            <tbody>
+              <%
+                const activeSessions = todaySessions.filter(s => !s.endTime);
+                const finishedSessions = todaySessions.filter(s => s.endTime);
+                const sortedSessions = [...activeSessions, ...finishedSessions];
+    
+                sortedSessions.forEach(session => {
+              %>
+                <tr>
+                  <td style="background-color: #ADD8E6"><%= session.computer?.name || 'Bilinmiyor' %></td>
+                  <td style="background-color: #ADD8E6"><%= session.computer?.lab?.name || 'Bilinmiyor' %></td>
+                  <td style="background-color: #ADD8E6"><%= session.operator?.name %> <%= session.operator?.lastname %></td>
+                  <td style="background-color: #ADD8E6"><%= formatTime(session.startTime) %></td>
+                  <td style="background-color: #ADD8E6"><%= session.endTime ? formatTime(session.endTime) : 'Devam ediyor' %></td>
+                  <td style="background-color: #ADD8E6">
+                    <% if (!session.endTime) { %>
+                      <i class="fas fa-hourglass-half text-warning"></i>
+                    <% } else { %>
+                      <i class="fas fa-stopwatch text-success"></i>
+                    <% } %>
+                    <%= formatDuration(new Date(session.endTime || new Date()) - new Date(session.startTime)) %>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          <% } else { %>
+            <tbody>
               <tr>
-                <td style="background-color: #ADD8E6"><%= session.computer?.name || 'Bilinmiyor' %></td>
-                <td style="background-color: #ADD8E6"><%= session.computer?.lab?.name || 'Bilinmiyor' %></td>
-                <td style="background-color: #ADD8E6"><%= session.operator?.name %> <%= session.operator?.lastname %></td>
-                <td style="background-color: #ADD8E6"><%= formatTime(session.startTime) %></td>
-                <td style="background-color: #ADD8E6"><%= session.endTime ? formatTime(session.endTime) : 'Devam ediyor' %></td>
-                <td style="background-color: #ADD8E6">
-                  <% if (!session.endTime) { %>
-                    <i class="fas fa-hourglass-half text-warning"></i>
-                  <% } else { %>
-                    <i class="fas fa-stopwatch text-success"></i>
-                  <% } %>
-                  <%= formatDuration(new Date(session.endTime || new Date()) - new Date(session.startTime)) %>
+                <td colspan="6" class="text-center" style="background-color: #f8d7da; color: #721c24;">
+                  Bugün herhangi bir oturumunuz bulunmamaktadır.
                 </td>
               </tr>
-            <% }) %>
-          </tbody>
-          
-
+            </tbody>
+          <% } %>
         </table>
       </div>
     </div>
