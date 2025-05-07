@@ -2,6 +2,20 @@
 
 <body class="main-layout inner_posituong" style="background-color:#1E1D42;">
   <%- include('../partials/_navbar') %>
+  <!-- Açık / Kapalı Bilgilendirme -->
+<div class="position-absolute" style="top: 150px; right: 20px; z-index: 999;">
+  <div class="d-flex align-items-center bg-white rounded-4 shadow p-2">
+    <div class="d-flex align-items-center me-3">
+      <span class="rounded-circle d-inline-block me-1" style="width: 16px; height: 16px; background-color: #198754;"></span>
+      <span class="fw-semibold text-success">Açık</span>
+    </div>
+    <div class="d-flex align-items-center">
+      <span class="rounded-circle d-inline-block me-1" style="width: 16px; height: 16px; background-color: #dc3545;"></span>
+      <span class="fw-semibold text-danger">Kapalı</span>
+    </div>
+  </div>
+</div>
+
 
   <div class="container mt-5" >
     <h2 class="text-center fw-bold text-white">💻 Laboratuvar Bilgisayar Durumları</h2>
