@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import Computer from "../models/computerModel.js";
 import Lab from "../models/labModel.js";
+import Program from "../models/programModel.js";
 
 // Süre formatlamak için yardımcı fonksiyon
 function formatDuration(milliseconds) {
@@ -296,6 +297,34 @@ const getLabComputerStatus = async (req, res) => {
   }
 };
 
+const getPrograms = async (req, res) => {
+  try {
+    const labs = await Lab.find();
+    const programs = await Program.find().populate(['lab', 'operator']);
 
+    const bookedSlots = {};
+    programs.forEach(program => {
+      const key = `${program.lab._id}-${program.day}-${program.hour}`;
+      bookedSlots[key] = {
+        operatorName: program.operator ? program.operator.name : 'Bilinmiyor',
+        labName: program.lab ? program.lab.name : 'Bilinmiyor',
+        operatorId: program.operator?._id?.toString(),
+      };
+    });
 
-export { getStudentDashboard, getLabHistory, getLabComputerStatus }; 
+    res.render("student/program", {
+      link: 'student-opt-program',
+      labs: labs,
+      bookedSlots: bookedSlots,
+      user: req.user, 
+    });
+  } catch (error) {
+    console.error("Program sayfası getirilirken hata:", error);
+    res.status(500).json({
+      succeeded: false,
+      error: "Program sayfası yüklenirken bir hata oluştu.",
+    });
+  }
+};
+
+export { getStudentDashboard, getLabHistory, getLabComputerStatus, getPrograms }; 

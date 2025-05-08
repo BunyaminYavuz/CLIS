@@ -28,6 +28,9 @@
                     <li class="nav-item <%= link === 'admin-operators' ? 'active' : '' %>">
                       <a class="nav-link" href="/admin/operators"><i class="fas fa-user-cog mr-2"></i>Operatörler</a>
                     </li>
+                    <li class="nav-item <%= link === 'admin-opt-program' ? 'active' : '' %>">
+                      <a class="nav-link" href="/admin/opt-programs"><i class="fas fa-user-cog mr-2"></i>Opt Programı</a>
+                    </li>
                     <li class="nav-item <%= link === 'admin-students' ? 'active' : '' %>">
                       <a class="nav-link" href="/admin/students"><i class="fas fa-user-graduate mr-2"></i>Öğrenciler</a>
                     </li>
@@ -63,6 +66,9 @@
                     </li>
                     <li class="nav-item <%= link === 'lab-computer-status' ? 'active' : '' %>">
                       <a class="nav-link" href="/student/lab-computer-status"><i class="fas fa-network-wired mr-2"></i>Laboratuvar Bilgisayar Durumları</a>
+                    </li>
+                    <li class="nav-item <%= link === 'student-opt-program' ? 'active' : '' %>">
+                      <a class="nav-link" href="/student/opt-programs"><i class="fas fa-user-cog mr-2"></i>Opt Programı</a>
                     </li>
                   <% } %>
                   <li class="nav-item">
