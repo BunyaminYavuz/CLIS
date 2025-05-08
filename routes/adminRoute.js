@@ -21,6 +21,7 @@ router.get("/operators", adminController.getOperatorsPage);
 router.get("/operators/:id", adminController.getOperatorPage);
 router.post('/operators/delete/:id', adminController.deleteOperator);
 router.post("/create-operator", adminController.createOperator);
+router.get("/opt-programs", adminController.getPrograms);
 
 // Computer routes
 router.post("/computers", adminController.createComputer);

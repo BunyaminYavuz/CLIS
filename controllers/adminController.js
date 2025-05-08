@@ -4,6 +4,7 @@ import PDFDocument from 'pdfkit';
 import { PassThrough } from 'stream';
 import Announcement from "../models/announcementModel.js";
 import Lab from "../models/labModel.js";
+import Program from "../models/programModel.js";
 import xlsx from 'xlsx'; 
 
 const getDashboard = async (req, res) => {
@@ -763,4 +764,35 @@ const getAddComputerPage = async (req, res) => {
   }
 };
 
-export { getDashboard, getReports, generateReport, createOperator, createComputer, updateComputerStatus, createCategory, createLab, endSession, createAnnouncement, getAnnouncements, getLabDetails, getLabs, getAddComputerPage, updateAnnouncement, getAnnouncement, deleteAnnouncement, getOperatorsPage, getOperatorPage, deleteOperator, importStudentsFromExcel, getStudentsPage }; 
+
+const getPrograms = async (req, res) => {
+  try {
+    const labs = await Lab.find();
+    const programs = await Program.find().populate(['lab', 'operator']);
+
+    const bookedSlots = {};
+    programs.forEach(program => {
+      const key = `${program.lab._id}-${program.day}-${program.hour}`;
+      bookedSlots[key] = {
+        operatorName: program.operator ? program.operator.name : 'Bilinmiyor',
+        labName: program.lab ? program.lab.name : 'Bilinmiyor',
+        operatorId: program.operator?._id?.toString(),
+      };
+    });
+
+    res.render("admin/program", {
+      link: 'admin-opt-program',
+      labs: labs,
+      bookedSlots: bookedSlots,
+      user: req.user, // kullanıcının bilgileri
+    });
+  } catch (error) {
+    console.error("Program sayfası getirilirken hata:", error);
+    res.status(500).json({
+      succeeded: false,
+      error: "Program sayfası yüklenirken bir hata oluştu.",
+    });
+  }
+};
+
+export { getDashboard, getReports, generateReport, createOperator, createComputer, updateComputerStatus, createCategory, createLab, endSession, createAnnouncement, getAnnouncements, getLabDetails, getLabs, getAddComputerPage, updateAnnouncement, getAnnouncement, deleteAnnouncement, getOperatorsPage, getOperatorPage, deleteOperator, importStudentsFromExcel, getStudentsPage, getPrograms }; 

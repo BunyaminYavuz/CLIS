@@ -1,0 +1,108 @@
+<%- include('../partials/_header') %>
+
+<body class="main-layout inner_posituong" style="background-color:#1E1D42;">
+  <%- include('../partials/_navbar') %>
+
+  <div class="d-flex justify-content-center gap-4 my-4 flex-wrap">
+    <div class="d-flex align-items-center gap-2">
+      <div style="width: 20px; height: 20px; background-color: #198754; border-radius: 4px;"></div>
+      <span class="text-white fw-semibold">Açık Saat</span>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <div style="width: 20px; height: 20px; background-color: #dc3545; border-radius: 4px;"></div>
+      <span class="text-white fw-semibold">Kapalı Saat</span>
+    </div>
+  </div>
+
+
+  <div class="container mt-5 mb-5">
+    <h2 class="text-center fw-bold text-white">📅 Operatör Haftalık Program</h2>
+
+    <div class="mb-3">
+      <label for="labSelect" class="form-label text-white">Laboratuvar Seçin:</label>
+      <select class="form-select" id="labSelect">
+        <option value="" selected>Bir laboratuvar seçin</option>
+        <% labs.forEach(lab => { %>
+          <option value="<%= lab._id %>"><%= lab.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="table-responsive mt-4">
+      <table class="table table-bordered text-center bg-white">
+        <thead class="table-dark">
+          <tr>
+            <th>Saat / Gün</th>
+            <% const days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma']; %>
+            <% days.forEach(day => { %>
+              <th><%= day %></th>
+            <% }) %>
+          </tr>
+        </thead>
+        <tbody>
+          <% const hours = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']; %>
+          <% hours.forEach(hour => { %>
+            <tr>
+              <th class="table-dark"><%= hour %></th>
+              <% days.forEach(day => { %>
+                <td class="time-slot" data-day="<%= day %>" data-hour="<%= hour %>">
+                  Boş
+                </td>
+              <% }) %>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <%- include('../partials/_footer') %>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const labSelect = document.getElementById('labSelect');
+      const timeSlots = document.querySelectorAll(".time-slot");
+      const bookedSlots = <%- JSON.stringify(bookedSlots) %>;
+      const loggedInUserRole = "<%= user.role %>"; // Kullanıcı rolü
+
+      function renderSlots() {
+        const selectedLabId = labSelect.value;
+
+        timeSlots.forEach(slot => {
+          const day = slot.dataset.day;
+          const hour = slot.dataset.hour;
+          let booking;
+          const key = `${selectedLabId}-${day}-${hour}`;
+
+           if (selectedLabId) {
+            booking = bookedSlots[key];
+          } else {
+            const matchingKeys = Object.keys(bookedSlots).filter(key => key.endsWith(`-${day}-${hour}`));
+             if (matchingKeys.length > 0) {
+              booking = bookedSlots[matchingKeys[0]];
+            }
+          }
+
+          if (booking) {
+            const displayInfo = `${booking.operatorName} (${booking.labName})`;
+            slot.textContent = displayInfo;
+            slot.className = 'time-slot bg-success text-white fw-semibold';
+            slot.style.cursor = 'not-allowed'; // Adminler için tıklanabilir değil
+          } else {
+            slot.textContent = "Boş";
+            slot.className = 'time-slot bg-danger text-white fw-semibold';
+            slot.style.cursor = 'not-allowed'; // Adminler için tıklanabilir değil
+          }
+        });
+      }
+
+      labSelect.addEventListener('change', () => {
+        renderSlots();
+      });
+
+      renderSlots(); // Sayfa yüklendiğinde slotları render et
+
+    });
+  </script>
+</body>
