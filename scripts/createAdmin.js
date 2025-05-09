@@ -2,23 +2,22 @@ import mongoose from "mongoose";
 import User from "../models/userModel.js";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
+import conn from "../db.js";
 
-dotenv.config();
+dotenv.config({path: "../.env"});
+conn()
 
 const createAdmin = async () => {
     try {
-        // MongoDB'ye bağlan
-        await mongoose.connect(process.env.DB_URL, {
-            dbName: "clis"
-        });
-
+        
         // Admin bilgileri
         const adminData = {
             name: "Admin",
             lastname: "User",
-            email: "admin@clis.com",
+            email: "admin2@clis.com",
             password: "admin123", // Güçlü bir şifre kullanın
-            role: "admin"
+            role: "admin",
+            rfid_id: 0
         };
 
         // Eğer bu email ile admin varsa, oluşturma
