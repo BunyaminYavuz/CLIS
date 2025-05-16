@@ -145,7 +145,6 @@ Demonstrates the real-time interaction between RFID reader, Raspberry Pi, and ba
 
 ## 🖼️ Sample Screenshots
 
-> Add screenshots in the `screenshots/` folder and link them here:
 ### ADMIN
 ![Admin Dashboard](./public/images/screenshots/admin_dashboard.png)
 
