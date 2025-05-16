@@ -194,7 +194,8 @@ This project was developed as a final year thesis for the Computer Engineering D
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under a custom license.  
+See the [LICENSE](./LICENSE) file for more details.
 
 ---
 
